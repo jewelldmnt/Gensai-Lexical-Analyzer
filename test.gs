@@ -7,3 +7,7 @@ out: "mama mo: "
 int: +
 int: #s
 test: sample
+
+oust: "74rty"
+right: x[]4wr
+lefting:;:;{[]]xd^e4    asdw
