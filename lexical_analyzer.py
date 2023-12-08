@@ -88,7 +88,7 @@ def is_valid_identifier(identifier):
     if not identifier or not identifier[0].isalpha() and identifier[0] != '_':
         return False
 
-    valid_chars = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
+    valid_chars = ALPHABETS + DIGITS + "_"
     for char in identifier[1:]:
         if char not in valid_chars:
             return False
