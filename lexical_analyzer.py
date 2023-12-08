@@ -55,15 +55,15 @@ def classify_lexeme(lexeme):
     - str: The token type.
     """
     if lexeme.startswith(('"', "'")) and lexeme.endswith(('"', "'")):
-        return 'string' if len(lexeme) - 2 > 1 else 'character'
+        return 'str_lit' if len(lexeme) - 2 > 1 else 'char_lit'
     elif lexeme.lower() in KEYWORDS:
         return 'keyword'
-    elif lexeme.lower() in DATA_TYPES.keys():
-        return DATA_TYPES.get(lexeme.lower())
+    elif lexeme.lower() in DATA_TYPES:
+        return DATA_TYPES[lexeme.lower()]
     elif lexeme in "+-*/":
         return 'operator'
     elif lexeme.lstrip('-').replace('.', '', 1).isdigit():
-        return 'float' if '.' in lexeme else 'integer'
+        return 'float_lit' if '.' in lexeme else 'int_lit'
     elif is_valid_identifier(lexeme):
         return 'identifier'
     else:
