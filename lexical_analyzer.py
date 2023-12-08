@@ -58,6 +58,8 @@ def classify_lexeme(lexeme):
         return 'string' if len(lexeme) - 2 > 1 else 'character'
     elif lexeme.lower() in KEYWORDS:
         return 'keyword'
+    elif lexeme.lower() in DATA_TYPES.keys():
+        return DATA_TYPES.get(lexeme.lower())
     elif lexeme in "+-*/":
         return 'operator'
     elif lexeme.lstrip('-').replace('.', '', 1).isdigit():
