@@ -10,7 +10,7 @@ ALPHABETS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 
 
-def lexer(contents):
+def tokenizer(contents):
     """
     Tokenizes the input content into lexemes and classifies them into different token types.
 
@@ -29,9 +29,12 @@ def lexer(contents):
         quote_count = 0
 
         for char in line:
+            # if the current character is a start or end of a string literal add 1
             if char in ('"', "'"):
                 quote_count += 1
-            in_quotes = quote_count % 2 == 1
+            in_quotes = quote_count % 2 == 1 # variable whether a character is part of a string literal
+            
+            # if the current character an end of a lexem append it to the tokens
             if char in (' ', ':') and not in_quotes:
                 if temp_str:
                     tokens.append((classify_lexeme(temp_str), temp_str))
@@ -114,5 +117,5 @@ def parse(file):
         tokens (list): A list of tokens representing the parsed content.
     """
     contents = open(file, 'r').read()
-    tokens = lexer(contents)
+    tokens = tokenizer(contents)
     return tokens
