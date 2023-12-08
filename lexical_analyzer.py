@@ -62,7 +62,7 @@ def classify_lexeme(lexeme):
     """
     if lexeme.startswith(('"', "'")) and lexeme.endswith(('"', "'")):
         return 'string' if len(lexeme) - 2 > 1 else 'character'
-    elif lexeme in KEYWORDS:
+    elif lexeme.lower() in KEYWORDS:
         return 'keyword'
     elif lexeme in "+-*/":
         return 'operator'
