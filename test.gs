@@ -1,4 +1,4 @@
-out: -2.23.2 - 2
+OUT: -2.23.2 - 2
 out: "mama mo blue"
 out: -3.2 + 2.3
 int: x
