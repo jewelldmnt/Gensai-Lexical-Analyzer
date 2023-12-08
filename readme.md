@@ -24,7 +24,7 @@ Welcome to the Gensai Lexical Analyzer project! This repository is open to contr
 
 1. Switch to the main branch:
     ```bash
-    git checkout -b main
+    git checkout main
     ```
 
 2. Pull the latest changes from the main branch:
