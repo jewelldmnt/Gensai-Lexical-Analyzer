@@ -16,17 +16,23 @@ def tokenizer(contents):
     for line in contents.split('\n'):
         tokens = []
         temp_str = ""
-        inside_quotes = False
+        inside_quotes = False # Flag to track whether the current character is inside quotes or not
         
         for index, char in enumerate(line):
+            
+            # Check for the beginning of a comment
             if char == "#":
                 temp_str = line[index:]
                 tokens.append((classify_lexeme(temp_str), temp_str))
                 temp_str = ""
                 break
+            
+            # Check for the beginning or end of quotes
             if char in ('"', "'"):
                 inside_quotes = not inside_quotes
                 temp_str += char
+                
+            # Check for whitespace, operators, or special characters
             elif not inside_quotes and (char.isspace() or char in OPERATORS or char in SPECIAL_CHAR):
                 if temp_str:
                     temp_str = temp_str.strip()
@@ -35,6 +41,7 @@ def tokenizer(contents):
 
                 if char in OPERATORS or char in SPECIAL_CHAR:
                     tokens.append((classify_lexeme(char), char))
+                    
             else:
                 temp_str += char
 
@@ -90,9 +97,8 @@ def is_valid_identifier(identifier):
     if not identifier or not identifier[0].isalpha() and identifier[0] != '_':
         return False
 
-    valid_chars = ALPHABETS + DIGITS + "_"
     for char in identifier[1:]:
-        if char not in valid_chars:
+        if char not in VALID_CHARS:
             return False
 
     if identifier in KEYWORDS:
