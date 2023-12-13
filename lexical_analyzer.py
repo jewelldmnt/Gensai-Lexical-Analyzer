@@ -11,31 +11,35 @@ def tokenizer(contents):
     Returns:
         all_tokens (list): A list of lists, where each inner list contains tuples representing tokens.
     """
-    lines = contents.split('\n')
     all_tokens = []
 
-    for line in lines:
+    for line in contents.split('\n'):
         tokens = []
         temp_str = ""
-        quote_count = 0
-
-        for char in line:
-            # if the current character is a start or end of a string literal add 1
+        inside_quotes = False
+        
+        for index, char in enumerate(line):
+            if char == "#":
+                temp_str = line[index:]
+                tokens.append((classify_lexeme(temp_str), temp_str))
+                temp_str = ""
+                break
             if char in ('"', "'"):
-                quote_count += 1
-            in_quotes = quote_count % 2 == 1 # variable whether a character is part of a string literal
-            
-            # if the current character an end of a lexem append it to the tokens
-            if char in (' ', ':') and not in_quotes:
+                inside_quotes = not inside_quotes
+                temp_str += char
+            elif not inside_quotes and (char.isspace() or char in OPERATORS or char in SPECIAL_CHAR):
                 if temp_str:
+                    temp_str = temp_str.strip()
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""
-                if char == ':':
-                    tokens.append(('delimiter', ':'))
+
+                if char in OPERATORS or char in SPECIAL_CHAR:
+                    tokens.append((classify_lexeme(char), char))
             else:
                 temp_str += char
 
         if temp_str:
+            temp_str = temp_str.strip()
             tokens.append((classify_lexeme(temp_str), temp_str))
 
         all_tokens.append(tokens)
@@ -57,15 +61,17 @@ def classify_lexeme(lexeme):
     if lexeme.startswith(('"', "'")) and lexeme.endswith(('"', "'")):
         return 'str_lit' if len(lexeme) - 2 > 1 else 'char_lit'
     elif lexeme.lower() in KEYWORDS:
-        return 'keyword'
-    elif lexeme.lower() in DATA_TYPES:
-        return DATA_TYPES[lexeme.lower()]
-    elif lexeme in "+-*/":
-        return 'operator'
+        return KEYWORDS[lexeme.lower()]
+    elif lexeme in OPERATORS:
+        return OPERATORS[lexeme.lower()]
+    elif lexeme in SPECIAL_CHAR:
+        return SPECIAL_CHAR[lexeme]
     elif lexeme.lstrip('-').replace('.', '', 1).isdigit():
         return 'float_lit' if '.' in lexeme else 'int_lit'
     elif is_valid_identifier(lexeme):
         return 'identifier'
+    elif lexeme.startswith("#"):
+        return 'comment'
     else:
         return 'invalid'
 
