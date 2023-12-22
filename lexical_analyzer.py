@@ -48,6 +48,7 @@ def tokenizer(contents):
         
         # count the number of starting tabs (indentation) per line then store it in tokens
         tokens = tokens + tab_counter(line)
+        line = line.strip()
         
         for char in line:
             # if the current character is a start or end of a string literal add 1
@@ -64,7 +65,7 @@ def tokenizer(contents):
                         is_comp, comp = compound_statement(temp_str)
                         if not is_comp:
                             # combine all the tokens
-                            tokens + comp
+                            tokens += comp
                         else:
                             tokens.append((lexem_type, temp_str))
                     else:
@@ -85,6 +86,9 @@ def tokenizer(contents):
     return all_tokens
 
 def compound_statement(lexeme):
+    '''
+    
+    '''
     tokens = []
     is_comp = False
     before_char = ''
