@@ -42,7 +42,7 @@ def tokenizer(contents):
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""
 
-                if (char in SPECIAL_CHAR) or char in OPERATORS:
+                if char in SPECIAL_CHAR or char in OPERATORS:
                     tokens.append((classify_lexeme(char), char))
                     
             else:
