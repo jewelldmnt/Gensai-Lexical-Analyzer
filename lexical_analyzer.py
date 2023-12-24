@@ -19,6 +19,7 @@ def tokenizer(contents):
         inside_quotes = False # Flag to track whether the current character is inside quotes or not
         
         for index, char in enumerate(line):
+            next_char = line[index+1] if index+1 < len(line) else '' 
             
             # Check for the beginning of a comment
             if char == "#":
@@ -44,7 +45,35 @@ def tokenizer(contents):
                     
             else:
                 temp_str += char
-
+                
+                
+            # check for digits
+            if next_char.isdigit() and temp_str and not inside_quotes:
+                # .3
+                if temp_str == '.':
+                    pass
+                # ex instance: a1
+                elif not temp_str.replace('.', '').isdigit():
+                    temp_str = temp_str.strip()
+                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    temp_str = ""                    
+                continue
+            
+            # ex instance: a1 or 
+            if temp_str.replace('.', '').isdigit() and not next_char.isdigit(): 
+                # ex instance: 1.9
+                if next_char == '.' and temp_str.count('.') == 1:
+                    temp_str = temp_str.strip()
+                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    temp_str = ""  
+                
+                # ex instance: 1a
+                elif not next_char.isdigit() and next_char != '.':
+                    temp_str = temp_str.strip()
+                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    temp_str = ""  
+                continue
+                
         if temp_str:
             temp_str = temp_str.strip()
             tokens.append((classify_lexeme(temp_str), temp_str))
