@@ -13,11 +13,13 @@ def tokenizer(contents):
     """
     all_tokens = []
 
+    # Iterate through each line in the input content
     for line in contents.split('\n'):
         tokens = []
         temp_str = ""
-        inside_quotes = False # Flag to track whether the current character is inside quotes or not
+        is_inside_quotes = False # Flag to track whether the current character is inside quotes or not
         
+        # Iterate through each character in the line
         for index, char in enumerate(line):
             next_char = line[index+1] if index+1 < len(line) else '' 
             
@@ -30,18 +32,22 @@ def tokenizer(contents):
             
             # Check for the beginning or end of quotes
             if char in ('"', "'"):
-                inside_quotes = not inside_quotes
+                is_inside_quotes = not is_inside_quotes
                 temp_str += char
                 
             # Check for whitespace, operators, or special characters
-            elif not inside_quotes and (char.isspace() or char in OPERATORS or char in SPECIAL_CHAR):
+            elif not is_inside_quotes and (char.isspace() or char in OPERATORS or char in SPECIAL_CHAR):
                 if temp_str:
                     temp_str = temp_str.strip()
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""
 
-                if char in OPERATORS or char in SPECIAL_CHAR:
+                if (char in SPECIAL_CHAR) or (char in OPERATORS and next_char.isspace()):
                     tokens.append((classify_lexeme(char), char))
+                elif char.isspace():
+                    pass
+                else:
+                    temp_str += char
                     
             else:
                 temp_str += char
@@ -49,7 +55,7 @@ def tokenizer(contents):
                 
             # check for digits
             # ex instance: a1.
-            if next_char == '.' and temp_str and not inside_quotes:
+            if next_char == '.' and temp_str and not is_inside_quotes:
                 # ex instance: a1
                 if is_valid_identifier(temp_str):
                     temp_str = temp_str.strip()
@@ -57,7 +63,7 @@ def tokenizer(contents):
                     temp_str = ""                    
             
             # ex instance: 1.a 
-            if temp_str.replace('.', '').isdigit() and not next_char.isdigit(): 
+            if temp_str.replace('-', '').replace('.', '').isdigit() and not next_char.isdigit(): 
                 # ex instance: 1.9.
                 if next_char == '.' and temp_str.count('.') == 1:
                     temp_str = temp_str.strip()
@@ -70,11 +76,12 @@ def tokenizer(contents):
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""  
                 continue
-                
+        
+        # Add any remaining non-empty string as a token
         if temp_str:
             temp_str = temp_str.strip()
             tokens.append((classify_lexeme(temp_str), temp_str))
-
+        
         all_tokens.append(tokens)
 
     return all_tokens
