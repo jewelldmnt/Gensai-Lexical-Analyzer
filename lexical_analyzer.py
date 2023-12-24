@@ -48,20 +48,17 @@ def tokenizer(contents):
                 
                 
             # check for digits
-            if next_char.isdigit() and temp_str and not inside_quotes:
-                # .3
-                if temp_str == '.':
-                    pass
+            # ex instance: a1.
+            if next_char == '.' and temp_str and not inside_quotes:
                 # ex instance: a1
-                elif not temp_str.replace('.', '').isdigit():
+                if is_valid_identifier(temp_str):
                     temp_str = temp_str.strip()
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""                    
-                continue
             
-            # ex instance: a1 or 
+            # ex instance: 1.a 
             if temp_str.replace('.', '').isdigit() and not next_char.isdigit(): 
-                # ex instance: 1.9
+                # ex instance: 1.9.
                 if next_char == '.' and temp_str.count('.') == 1:
                     temp_str = temp_str.strip()
                     tokens.append((classify_lexeme(temp_str), temp_str))
