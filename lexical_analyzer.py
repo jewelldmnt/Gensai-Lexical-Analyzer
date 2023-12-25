@@ -25,6 +25,8 @@ def tokenizer(contents):
             
             # Check for the beginning of a comment
             if char == "#":
+                if temp_str:
+                    tokens.append((classify_lexeme(temp_str), temp_str))
                 temp_str = line[index:]
                 tokens.append((classify_lexeme(temp_str), temp_str))
                 temp_str = ""
