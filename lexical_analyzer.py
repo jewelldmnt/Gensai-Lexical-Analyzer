@@ -13,78 +13,93 @@ def tokenizer(contents):
     """
     all_tokens = []
 
-    # Iterate through each line in the input content
     for line in contents.split('\n'):
         tokens = []
         temp_str = ""
-        is_inside_quotes = False # Flag to track whether the current character is inside quotes or not
         
-        # Iterate through each character in the line
         for index, char in enumerate(line):
             next_char = line[index+1] if index+1 < len(line) else '' 
             
-            # Check for the beginning of a comment
+            ################################################################################
+            # CHECKING OF COMMENTS
+            ################################################################################
             if char == "#":
                 if temp_str:
                     tokens.append((classify_lexeme(temp_str), temp_str))
-                temp_str = line[index:]
+                temp_str = line[index:] # Extracts the substring from the 'index' position to the end of the 'line'.
                 tokens.append((classify_lexeme(temp_str), temp_str))
                 temp_str = ""
                 break
             
+            
+            ################################################################################
+            # CHECKING OF STRINGS, OPERATORS, AND SPECIAL CHARACTERS
+            ################################################################################
+                     
+            is_char_space_op_specialchar = char.isspace() or char in OPERATORS or char in SPECIAL_CHAR
+            is_compound_op = temp_str+char in OPERATORS and temp_str
+            is_not_partof_compound_op = not char+next_char in OPERATORS and char in OPERATORS
+            is_partof_compound_op = char+next_char in OPERATORS and char in OPERATORS and not temp_str
+            
             # Check for the beginning or end of quotes
+            is_inside_quotes = False # Flag to track whether the current character is inside quotes or not
             if char in ('"', "'"):
                 is_inside_quotes = not is_inside_quotes
                 temp_str += char
                 
-            # Check for whitespace, operators, or special characters
-            elif not is_inside_quotes and (char.isspace() or char in OPERATORS or char in SPECIAL_CHAR):
+            elif not is_inside_quotes and is_char_space_op_specialchar:
                 if temp_str and temp_str not in OPERATORS:
                     temp_str = temp_str.strip()
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""
 
-                # Check if it is a negative sign
-                if char == '-' and (not tokens or tokens[-1][1] == ':'):
+                is_negative_sign = char == '-' and (not tokens or tokens[-1][1] == ':')
+                if is_negative_sign:
                     temp_str += char
                     continue
-                
-                elif temp_str+char in OPERATORS and temp_str:
+
+                elif is_compound_op:
                     temp_str += char
                     tokens.append((classify_lexeme(temp_str), temp_str))
-                    temp_str = ""    
+                    temp_str = ""
+                    continue    
                     
-                elif not char+next_char in OPERATORS and char in OPERATORS:
-                    tokens.append((classify_lexeme(char), char))             
+                elif is_not_partof_compound_op:
+                    tokens.append((classify_lexeme(char), char))  
+                    continue           
                                     
-                elif char+next_char in OPERATORS and char in OPERATORS and not temp_str:
+                elif is_partof_compound_op:
                     temp_str += char
                 
                 elif char in SPECIAL_CHAR:
                     tokens.append((classify_lexeme(char), char))
-                    
+                    continue                    
             else:
                 temp_str += char
                 
                 
-            # check for digits
-            # ex instance: a1.
+            ################################################################################
+            # CHECKING OF VALID NUMBERS
+            ################################################################################
             if next_char == '.' and temp_str and not is_inside_quotes:
-                # ex instance: a1
+                # Check for cases like a1
                 if is_valid_identifier(temp_str):
                     temp_str = temp_str.strip()
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""                    
             
-            # ex instance: 1.a 
-            if temp_str.replace('-', '').replace('.', '').isdigit() and not next_char.isdigit(): 
-                # ex instance: 1.9.
-                if next_char == '.' and temp_str.count('.') == 1:
+            # Check if the next character is not part of a number
+            next_char_is_not_partof_number = temp_str.replace('-', '').replace('.', '').isdigit() and not next_char.isdigit()
+            if next_char_is_not_partof_number: 
+                
+                # Check if it is a complete decimal
+                is_decimal_full = next_char == '.' and temp_str.count('.') == 1
+                if is_decimal_full:
                     temp_str = temp_str.strip()
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""  
                 
-                # ex instance: 1a
+                # Check for cases like 1a
                 elif not next_char.isdigit() and next_char != '.':
                     temp_str = temp_str.strip()
                     tokens.append((classify_lexeme(temp_str), temp_str))
@@ -98,7 +113,6 @@ def tokenizer(contents):
         all_tokens.append(tokens)
 
     return all_tokens
-
 
 
 def classify_lexeme(lexeme):
