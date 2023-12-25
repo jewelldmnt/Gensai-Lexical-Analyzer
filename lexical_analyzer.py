@@ -42,6 +42,7 @@ def tokenizer(contents):
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""
 
+                # Check if it is a negative sign
                 if char == '-' and (not tokens or tokens[-1][1] == ':'):
                     temp_str += char
                     continue
