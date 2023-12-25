@@ -48,9 +48,16 @@ ARITHMETIC_OP = {
     '^': 'power_op'
 }
 
+ASSIGNMENT_OP = {
+    '+=': 'plus_or_equal_op',
+    '-=': 'minus_or_equal_op',
+    '/=': 'div_or_equal_op',
+    '*=': 'mult_or_equal_op',
+    
+}
 
 LOGICAL_OP = {
-    '&': 'and_op',
+    '&&': 'and_op',
     '||': 'or_op',
     '!': 'not_op'
 }
