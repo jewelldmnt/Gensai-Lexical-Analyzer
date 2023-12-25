@@ -8,7 +8,7 @@
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal",
-            "args": ["test.gs"]
+            "args": ["test2.gs"]
         }
     ]
 }
