@@ -45,7 +45,8 @@ ARITHMETIC_OP = {
     '-': 'subtraction_op',
     '*': 'multiplication_op',
     '/': 'division_op',
-    '^': 'power_op'
+    '^': 'power_op',
+    '%': 'modulus_op'
 }
 
 

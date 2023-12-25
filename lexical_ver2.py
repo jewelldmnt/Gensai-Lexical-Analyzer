@@ -171,97 +171,66 @@ def tokenizer(contents):
 
     for line in contents.split('\n'):
         tokens = []
-        temp_str = ""
-        inside_quotes = False # Flag to track whether the current character is inside quotes or not
+        previous_str = ""
         
-        # count the number of starting tabs (indentation) per line then store it in tokens
+        # Count the number of starting tabs (indentation) per line then store it in tokens
         tokens = tokens + tab_counter(line)
         line = line.strip()
-        stringlen = len(line)
-        operator_index = 1
+        
+        inside_quotes = False  # Flag to track whether the current character is inside quotes or not
+        stringlen = len(line)  # Flag to track the length of the current line
+        operator_index = 1     # Flag regarding the number of place the operator character is
+        inside_comment = False # Flag to track if its in a comment
         
         for index, char in enumerate(line):
-            # Check if current string has digit or alphabet the beginning of a comment
-            has_neither = not any(c.isalpha() for c in temp_str) and not any(c.isdigit() for c in temp_str)
-            
-            # Check for the beginning of a comment
-            if char == "#":
-                temp_str = line[index:]
-                tokens.append((classify_lexeme(temp_str), temp_str))
-                temp_str = ""
-                break
-            
-            # Check if a special character then append instantly the previous lexeme and the current special character
-            if char in SPECIAL_CHAR and char not in '"\'' and has_neither:
-                if temp_str != '':
-                    tokens.append((classify_lexeme(temp_str), temp_str))
-                tokens.append((classify_lexeme(char), char))
-                temp_str = ""
-                continue
-            
-            # Check if an operator or part of a logical operator and is the first character of a compound logical operator
-            if (char in OPERATORS or char in '&|%') and operator_index == 1 and has_neither:
-                if char == '&':
-                    tokens.append((classify_lexeme(char), char))
-                    continue
-                operator_index +=1
-                temp_str += char
-                if stringlen > index + 1:
-                    continue
-                else:
-                    tokens.append((classify_lexeme(char), char))
-                    operator_index = 1
-                    temp_str = ""
-                    continue
-            # Check if the lexeme is a assignment or comparison operator
-            elif temp_str in '*/-+%><^!=' and operator_index == 2 and char == '=':
-                temp_str += char
-                tokens.append((classify_lexeme(temp_str), temp_str))
-                operator_index = 1
-                temp_str = ""
-                continue
-            # Check if its a valid or_op or occasionally a compoound statement
-            elif (char in OPERATORS or char in '|') and operator_index == 2 and has_neither:
-                if temp_str == char and temp_str == '|':
-                    tokens.append((classify_lexeme(temp_str + char), temp_str+char))
-                    operator_index = 1
-                    temp_str = ""
-                    continue
-                tokens.append((classify_lexeme(temp_str), temp_str))
-                tokens.append((classify_lexeme(char), char))
-                temp_str = ""
-                operator_index = 1
-                continue
-            
-            # Check for the beginning or end of quotes
-            if char in ('"', "'"):
-                inside_quotes = not inside_quotes
-                temp_str += char
+            # If its part of the lexeme and not the end of a line
+            if not inside_quotes and not char.isspace() and not index == stringlen - 1:
+                # Its a comment
+                is_partof_comment = not inside_quotes and char == '#'
+                # Its a string literal
+                is_partof_string = char in ('\'','"') or inside_quotes
+                # Its an alphabet and the previous string consists of alphabet and numbers and the first character is alphabet (variable or data type)
+                is_partof_identifier = not inside_quotes and not previous_str or ((char.isalnum() or char == '_') and (char[0].isalpha() or char[0] == '_'))
+                # Its a number and the previous string is still a number or part of a number(float or int)
+                is_partof_number = not inside_quotes and not previous_str or ((char.isnumeric() or char == '.') and (char[0].isnumeric() or char[0] == '.'))
+                # Its a logical operator
+                is_partof_operator = not inside_quotes and not previous_str or char in '*/-+%><^!=&'
                 
-            # Check if lexeme is not inside a quote and char is whitespace or its the end of a lexeme
-            elif not inside_quotes and (char.isspace() or stringlen == index+1):
-                operator_index = 1
-                if stringlen == index+1:
-                    temp_str += char
-                lexem_type = classify_lexeme(temp_str)
-                if temp_str:
-                    # Check if an invalid lexem is a compound statement else append token
-                    if lexem_type == 'invalid':
-                        is_comp, comp = compound_statement(temp_str)
-                        if not is_comp:
-                            # Combine all the tokens
-                            tokens += comp
-                        else:
-                            tokens.append((lexem_type, temp_str))
+                if is_partof_string:
+                    if char in ('\'','"') and inside_quotes:
+                        previous_str += char
+                        inside_quotes = not inside_quotes
+                        tokens.append((classify_lexeme(previous_str), previous_str))
+                        break
                     else:
-                        tokens.append((lexem_type, temp_str))
-                    temp_str = ''
+                        previous_str += char
+                        continue
+                if is_partof_comment:
+                    tokens.append((classify_lexeme(line[index:]), line[index:]))
+                    break
+                if is_partof_identifier:
+                    previous_str += char
+                if is_partof_number:
+                    previous_str += char
+                if is_partof_operator:
+                    if not previous_str:
+                        previous_str = char
+                    elif previous_str in '*/-+%><^!=' and char == '=':
+                        previous_str += char
+                        tokens.append((classify_lexeme(previous_str), previous_str))
+                        previous_str = ""
+                        continue
             else:
-                temp_str += char
-
-        if temp_str:
-            temp_str = temp_str.strip()
-            tokens.append((classify_lexeme(temp_str), temp_str))
+                # classify lexeme
+                lexeme_type = classify_lexeme(line)
+                # if invalid check if its compound
+                if lexeme_type == 'invalid':
+                    # if compound combine the tokens
+                    compound_tokens = compound_statement(line)
+                    tokens = tokens + compound_tokens
+                else:
+                    tokens.append((lexeme_type, line))
+                    
 
         all_tokens.append(tokens)
     return all_tokens

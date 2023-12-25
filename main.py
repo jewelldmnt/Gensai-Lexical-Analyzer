@@ -1,6 +1,6 @@
 from sys import argv
 import pandas as pd
-from lexical_analyzer import parse
+from lexical_ver2 import parse
 
 def main():
     file_path = argv[1]
