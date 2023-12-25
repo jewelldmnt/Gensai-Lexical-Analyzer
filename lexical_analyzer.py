@@ -75,7 +75,6 @@ def tokenizer(contents):
                     temp_str = temp_str.strip()
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""  
-                continue
         
         # Add any remaining non-empty string as a token
         if temp_str:
