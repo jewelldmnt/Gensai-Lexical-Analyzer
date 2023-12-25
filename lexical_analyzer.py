@@ -39,7 +39,7 @@ def tokenizer(contents):
                 
             # Check for whitespace, operators, or special characters
             elif not is_inside_quotes and (char.isspace() or char in OPERATORS or char in SPECIAL_CHAR):
-                if temp_str:
+                if temp_str and temp_str not in OPERATORS:
                     temp_str = temp_str.strip()
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""
@@ -49,7 +49,18 @@ def tokenizer(contents):
                     temp_str += char
                     continue
                 
-                if char in OPERATORS or char in SPECIAL_CHAR:
+                elif temp_str+char in OPERATORS and temp_str:
+                    temp_str += char
+                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    temp_str = ""    
+                    
+                elif not char+next_char in OPERATORS and char in OPERATORS:
+                    tokens.append((classify_lexeme(char), char))             
+                                    
+                elif char+next_char in OPERATORS and char in OPERATORS and not temp_str:
+                    temp_str += char
+                
+                elif char in SPECIAL_CHAR:
                     tokens.append((classify_lexeme(char), char))
                     
             else:
