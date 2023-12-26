@@ -5,6 +5,15 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
 
 def file_handling(extension):
+    """
+    handles the file starting from its current directory to a directory in the current file and validates the directory.
+
+    Parameters:
+        extension (string): the file extension (i.e. pdf, csv).
+
+    Returns:
+        file_path (string): file path of the data.
+    """
     # Get the current script's directory
     current_directory = os.path.dirname(os.path.abspath(__file__))
     
@@ -21,6 +30,16 @@ def file_handling(extension):
     return file_path
 
 def generate_pdf(df, pdf_path):
+    """
+    generates a pdf file 
+
+    Parameters:
+        df:         the dataframe containing the tokens, token type, and code line.
+        pdf_path:   the file path to download the pdf file.
+
+    Returns:
+        pdf file containing the tokens, type of token, and what line it is found on.
+    """
     doc = SimpleDocTemplate(pdf_path, pagesize=letter)
     
     # Convert DataFrame to a list of lists
@@ -44,10 +63,20 @@ def generate_pdf(df, pdf_path):
     doc.build([table])
 
 def output(df):
+    '''
+    outputs a raw file either a csv or pdf file or simply just print the tokens.
+
+    Parameters:
+        df: the dataframe containing the tokens, token type, and code line.
+
+    Returns:
+        pdf file or csv file: data containing the tokens, type of token, and what line it is found on.
+    '''
     pdf_or_csv = input("Enter 1 for a csv file output.\nEnter 2 for a pdf file output.\nEnter anything for no file output: ")
     
+    # Handles the input of the user and outputs the respective file
     if pdf_or_csv == '1':
-        df.to_csv(file_handling('csv'))
+        df.to_csv(file_handling('csv')) # downloads the csv file to the directory
         print(df.to_string(index=False))
         
     elif pdf_or_csv == '2':
