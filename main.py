@@ -1,7 +1,3 @@
-# Install necessary modules
-#pip install pandas reportlab
-#!pip install pandas
-
 # Import modules
 from sys import argv
 import pandas as pd
