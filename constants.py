@@ -88,6 +88,7 @@ SPECIAL_CHAR = {
     '}': 'right_curly',
     ';': 'semi_colon',
     '"': 'double_quotation',
-    "'": 'single_quotation'
+    "'": 'single_quotation',
+    ".": 'period'
     
 }
