@@ -13,6 +13,10 @@ def tab_counter(string):
         -emptry list
     '''
     tab_tokens = []
+    
+    if string.isspace():
+        return []
+    
     # if the string starts with a tab (4 spaces) and has non whitespaces
     if string.startswith('    ') and not string.isspace():
         temp_tab = ''
