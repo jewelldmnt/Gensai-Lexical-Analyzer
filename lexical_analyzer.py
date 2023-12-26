@@ -62,46 +62,71 @@ def tokenizer(contents):
 
     for line in contents.split('\n'):
         tokens = []
-        temp_str = ""
         tokens = tokens + tab_counter(line)
         line = line.strip()
-        
+        temp_str = ""
+        is_partof_str = False # Flag to track whether the current character is inside quotes or not
+        start_quote = ""
+
+
         for index, char in enumerate(line):
             next_char = line[index+1] if index+1 < len(line) else '' 
             
             ################################################################################
             # CHECKING OF COMMENTS
             ################################################################################
-            if char == "#":
+            if char == "#" and not is_partof_str:
                 if temp_str:
                     tokens.append((classify_lexeme(temp_str), temp_str))
                 temp_str = line[index:] # Extracts the substring from the 'index' position to the end of the 'line'.
                 tokens.append((classify_lexeme(temp_str), temp_str))
                 temp_str = ""
                 break
-            
-            
+                
+                
             #################git###############################################################
             # CHECKING OF STRINGS, OPERATORS, AND SPECIAL CHARACTERS
             ################################################################################
-                     
+            
+            # Check if it's a space, operator, or special character.
             is_char_space_op_specialchar = char.isspace() or char in OPERATORS or char in SPECIAL_CHAR
+            
+            # Check if the combination of the current character and the previous characters forms a compound operator.
             is_compound_op = temp_str+char in OPERATORS and temp_str
-            is_not_partof_compound_op = not char+next_char in OPERATORS and char in OPERATORS
+            
+            # Check if the current character, combined with the next character, forms a compound operator.
             is_partof_compound_op = char+next_char in OPERATORS and char in OPERATORS and not temp_str
             
-            # Check for the beginning or end of quotes
-            is_inside_quotes = False # Flag to track whether the current character is inside quotes or not
-            if char in ('"', "'"):
-                is_inside_quotes = not is_inside_quotes
+            # Check if the current character is not part of a compound operator but is a standalone operator.
+            is_single_op = not char+next_char in OPERATORS and char in OPERATORS
+            
+            # Check if there are succeeding quotes of the same kind as the current character (char) in the remaining part of the line
+            has_succeeding_quotes = any(c in ('"', "'") and c == char for c in line[index+1:])
+            
+            # Check for the start of the string
+            if char in ('"', "'") and has_succeeding_quotes and not start_quote:
+                start_quote = char
+                is_partof_str = True
                 temp_str += char
+                continue
+            
+            # Check for the end of the string
+            elif char == start_quote and is_partof_str:
+                is_partof_str = False
+                temp_str += char
+                temp_str = temp_str.strip()
+                tokens.append((classify_lexeme(temp_str), temp_str))
+                temp_str = ""
+                start_quote = ""
+                continue
                 
-            elif not is_inside_quotes and is_char_space_op_specialchar:
+            elif not is_partof_str and is_char_space_op_specialchar:
                 if temp_str and temp_str not in OPERATORS:
                     temp_str = temp_str.strip()
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""
 
+                # Check if the current character is a negative sign, only valid at the beginning of a line or after a colon.
                 is_negative_sign = char == '-' and (not tokens or tokens[-1][1] == ':')
                 if is_negative_sign:
                     temp_str += char
@@ -113,7 +138,7 @@ def tokenizer(contents):
                     temp_str = ""
                     continue    
                     
-                elif is_not_partof_compound_op:
+                elif is_single_op:
                     tokens.append((classify_lexeme(char), char))  
                     continue           
                                     
@@ -130,7 +155,7 @@ def tokenizer(contents):
             ################################################################################
             # CHECKING OF VALID NUMBERS
             ################################################################################
-            if next_char == '.' and temp_str and not is_inside_quotes:
+            if next_char == '.' and temp_str and not is_partof_str:
                 # Check for cases like a1
                 if is_valid_identifier(temp_str):
                     temp_str = temp_str.strip()
@@ -148,6 +173,7 @@ def tokenizer(contents):
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""  
                 
+                # Check if the current temp_str is not followed by a digit or a period
                 # Check for cases like 1a
                 elif not next_char.isdigit() and next_char != '.':
                     temp_str = temp_str.strip()
@@ -174,7 +200,7 @@ def classify_lexeme(lexeme):
     Returns:
     - str: The token type.
     """
-    if lexeme.startswith(('"', "'")) and lexeme.endswith(('"', "'")):
+    if lexeme.startswith(('"', "'")) and lexeme.endswith(('"', "'")) and len(lexeme) > 1:
         return 'str_lit' if len(lexeme) - 2 > 1 else 'char_lit'
     elif lexeme.lower() in KEYWORDS:
         return KEYWORDS[lexeme.lower()]
