@@ -43,7 +43,7 @@ def tab_counter(string):
         whitespace = ''
         for x in string:
             if x.isspace():
-                whitespace+=x
+                whitespace+='\s'
             else:
                 break
         tab_tokens.append(('invalid_indent', whitespace))
