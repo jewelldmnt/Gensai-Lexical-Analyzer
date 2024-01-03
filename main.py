@@ -15,8 +15,15 @@ def main():
     Returns:
         pdf file or csv file: data containing the tokens, type of token, and what line it is found on.
     '''
-    file_path = argv[1]
-    tokens = parse(file_path)
+    file_name = input("Enter the file name (without the path, e.g., 'example.gs'): ")
+    file_path = f'tester/{file_name}'  # Assuming the files are always inside the 'tester' folder
+
+    try:
+        tokens = parse(file_path)
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+        return
+    
     data = []
 
     if not file_path.endswith(".gs"):
