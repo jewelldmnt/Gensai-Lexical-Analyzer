@@ -30,10 +30,10 @@ def main():
 
     for line_num, line_code in enumerate(tokens, start=1):
         for token, lexeme in line_code:
-            data.append([line_num, token, lexeme])
+            data.append([line_num, lexeme, token])
 
     # Create a DataFrame
-    df = pd.DataFrame(data, columns=['Line', 'Token', 'Lexeme'])
+    df = pd.DataFrame(data, columns=['Line', 'Lexeme', 'Token'])
     
     output(df)
 
