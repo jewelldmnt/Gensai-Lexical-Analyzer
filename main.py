@@ -1,5 +1,3 @@
-# Import modules
-from sys import argv
 import pandas as pd
 from lexical_analyzer import parse
 from output import output
