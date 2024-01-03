@@ -4,7 +4,5 @@ This project contains a Python implementation of a lexical analyzer for a langua
 ## How to Run
 1. Open a terminal or command prompt.
 2. Navigate to the project directory.
-3. Run the lexical analyzer by executing the following command:
- ```bash
-   python main.py "test.gs"
+3. Run the lexical analyzer by running the main.py
  
