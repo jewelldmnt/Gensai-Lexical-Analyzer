@@ -7,9 +7,9 @@ VALID_CHARS = ALPHABETS + DIGITS + "_"
 # KEYWORDS AND DATA TYPES
 ########################################
 kw = [
-    "and", "as", "assert", "async", "await", "break", "class", "continue",
-    "def", "del", "elif", "else", "except", "finally", "for", "from", "global",
-    "False", "True", "if", "import", "withi n", "is", "lambda",
+    "and", "as", "assert", "async", "await", "stop", "class", "skip",
+    "func", "del", "elif", "else", "except", "finally", "for", "from", "global",
+    "False", "True", "if", "import", "within", "is", "lambda",
     "None", "not", "or", "pass", "raise", "repeat", "return", "try", "while",
     "out", "in"
 ]
@@ -24,6 +24,30 @@ DATA_TYPES = {
 
 KEYWORDS = {keyword: f'{keyword}_kw' for keyword in kw}
 KEYWORDS.update(DATA_TYPES)
+
+########################################
+# PRE-DEFINED FUNCTIONS
+########################################
+builtin_func = [
+    'cal_velocity',
+    'cal_displacement',
+    'cal_force',
+    'cal_work',
+    'find_gene',
+    'cal_gc',
+    'cal_mw',
+    'transcribe_dna',
+    'cal_density',
+    'cal_pct_vol',
+    'cal_moles',
+    'cal_concentration',
+    'cal_NAI',
+    'cal_vol_strain',
+    'cal_intensity',
+    'cal_magnitude'
+]
+
+BUILTIN_FUNC = {func: f'{func}_func' for func in builtin_func}
 
 
 
@@ -89,6 +113,7 @@ SPECIAL_CHAR = {
     ';': 'semi_colon',
     '"': 'double_quotation',
     "'": 'single_quotation',
-    ".": 'period'
+    ".": 'period_delim',
+    ",": 'comma_delim'
     
 }

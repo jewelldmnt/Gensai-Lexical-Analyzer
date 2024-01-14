@@ -1,5 +1,3 @@
-# Import modules
-from sys import argv
 import pandas as pd
 from lexical_analyzer import parse
 from output import output
@@ -15,8 +13,15 @@ def main():
     Returns:
         pdf file or csv file: data containing the tokens, type of token, and what line it is found on.
     '''
-    file_path = argv[1]
-    tokens = parse(file_path)
+    file_name = input("Enter the file name (without the path, e.g., 'example.gs'): ")
+    file_path = f'tester/{file_name}'  # Assuming the files are always inside the 'tester' folder
+
+    try:
+        tokens = parse(file_path)
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+        return
+    
     data = []
 
     if not file_path.endswith(".gs"):
@@ -25,10 +30,10 @@ def main():
 
     for line_num, line_code in enumerate(tokens, start=1):
         for token, lexeme in line_code:
-            data.append([line_num, token, lexeme])
+            data.append([line_num, lexeme, token])
 
     # Create a DataFrame
-    df = pd.DataFrame(data, columns=['Line', 'Token', 'Lexeme'])
+    df = pd.DataFrame(data, columns=['Line', 'Lexeme', 'Token'])
     
     output(df)
 
