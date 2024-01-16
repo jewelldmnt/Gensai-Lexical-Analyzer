@@ -77,7 +77,7 @@ def tokenizer(contents):
 
         for index, char in enumerate(line):
             next_char = line[index+1] if index+1 < len(line) else '' 
-            
+            prev_char = temp_str[-1] if temp_str else ''
             ################################################################################
             # CHECKING OF COMMENTS
             ################################################################################
@@ -201,13 +201,15 @@ def tokenizer(contents):
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""
                     continue    
-                    
-                elif is_char_single_op:
-                    tokens.append((classify_lexeme(char), char))  
-                    continue           
-                                    
+                      
                 elif is_char_partof_compound_op:
                     temp_str += char
+                
+                elif char in OPERATORS and next_char in OPERATORS and not is_char_partof_compound_op:
+                    temp_str += char
+                
+                elif char in OPERATORS and temp_str not in OPERATORS:
+                    tokens.append((classify_lexeme(char), char))
                 
                 elif char in SPECIAL_CHAR:
                     # Check if the character 'char' is a period and if it is part of a valid number
@@ -216,38 +218,20 @@ def tokenizer(contents):
                         temp_str += char
                     else:
                         tokens.append((classify_lexeme(char), char))
-                        continue                    
+                        continue    
+                else:
+                    temp_str += char                
+            
+            elif next_char not in OPERATORS and prev_char in OPERATORS:
+                if temp_str:
+                    temp_str = temp_str.strip()
+                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    temp_str = ""
+                temp_str += char
+            
             else:
                 temp_str += char
-                
-                
-            ################################################################################
-            # CHECKING OF VALID NUMBERS
-            ################################################################################
-            if next_char == '.' and temp_str and not is_char_partof_str:
-                # Check for cases like a1
-                if is_valid_identifier(temp_str):
-                    temp_str = temp_str.strip()
-                    tokens.append((classify_lexeme(temp_str), temp_str))
-                    temp_str = ""                    
             
-            # Check if the next character is not part of a number
-            next_char_is_not_partof_number = temp_str.replace('.', '').isdigit() and not next_char.isdigit()
-            if next_char_is_not_partof_number: 
-                
-                # Check if it is a complete decimal
-                is_decimal_full = next_char == '.' and temp_str.count('.') == 1
-                if is_decimal_full:
-                    temp_str = temp_str.strip()
-                    tokens.append((classify_lexeme(temp_str), temp_str))
-                    temp_str = ""  
-                
-                # Check if the current temp_str is not followed by a digit or a period
-                # Check for cases like 1a
-                elif not next_char.isdigit() and next_char != '.':
-                    temp_str = temp_str.strip()
-                    tokens.append((classify_lexeme(temp_str), temp_str))
-                    temp_str = ""  
         
         # Add any remaining non-empty string as a token
         if temp_str:
