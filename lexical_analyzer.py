@@ -188,7 +188,7 @@ def tokenizer(contents):
             # Checking of operators and special char
             elif is_char_op_specialchar:
                 # Check if the character 'char' is a period and if it is not part of a valid number
-                is_char_partof_number = (temp_str.replace('.', '').isdigit() and char == '.') and not is_char_partof_str
+                is_char_partof_number = (temp_str.replace('.', '').isdigit() and char == '.') and (not is_char_partof_str or is_char_partof_braces)
                 if temp_str and temp_str not in OPERATORS and not is_char_partof_number:
                     if is_char_partof_str and not is_char_partof_braces:
                         tokens.append((classify_lexeme(temp_str, is_partof_str=True), temp_str))
@@ -212,7 +212,7 @@ def tokenizer(contents):
                 
                 elif char in SPECIAL_CHAR:
                     # Check if the character 'char' is a period and if it is part of a valid number
-                    is_period_partof_number = (temp_str.replace('.', '').isdigit() or next_char.isdigit() and char == '.') and not is_char_partof_str
+                    is_period_partof_number = (temp_str.replace('.', '').isdigit() or next_char.isdigit() and char == '.') and (not is_char_partof_str or is_char_partof_braces)
                     if  is_period_partof_number:
                         temp_str += char
                     else:
