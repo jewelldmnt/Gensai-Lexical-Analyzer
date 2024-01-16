@@ -36,8 +36,8 @@ def main():
             print("Error: Invalid file extension. You must have only one file extension.")
             return
 
-    if not file_path.endswith(".gs"):
-        print("Error: Invalid file extension. Only '.gs' files are allowed.")
+    if not file_path.endswith(".gsci"):
+        print("Error: Invalid file extension. Only '.gsai' files are allowed.")
         return
 
     for line_num, line_code in enumerate(tokens, start=1):
