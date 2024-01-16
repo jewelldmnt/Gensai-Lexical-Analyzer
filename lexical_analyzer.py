@@ -181,7 +181,7 @@ def tokenizer(contents):
                     tokens.append((classify_lexeme(char), char))                      
                     
             # Check for identifier inside braces
-            elif is_char_partof_str and not is_char_op_specialchar and not char.isdigit():
+            elif is_char_partof_str and not is_char_op_specialchar and not is_char_partof_braces:
                 temp_str += char  
                 continue
                   

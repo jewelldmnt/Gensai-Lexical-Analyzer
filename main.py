@@ -14,7 +14,7 @@ def main():
     Returns:
         pdf file or csv file: data containing the tokens, type of token, and what line it is found on.
     '''
-    file_name = input("Enter the file name (without the path, e.g., 'example.gs'): ")
+    file_name = input("Enter the file name (without the path, e.g., 'example.gsai'): ")
     file_path = f'tester/{file_name}'  # Assuming the files are always inside the 'tester' folder
 
     try:
