@@ -36,7 +36,7 @@ def main():
             print("Error: Invalid file extension. You must have only one file extension.")
             return
 
-    if not file_path.endswith(".gsci"):
+    if not file_path.endswith(".gsai"):
         print("Error: Invalid file extension. Only '.gsai' files are allowed.")
         return
 
