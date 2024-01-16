@@ -114,6 +114,6 @@ SPECIAL_CHAR = {
     '"': 'double_quotation',
     "'": 'single_quotation',
     ".": 'period_delim',
-    ",": 'comma_delim'
-    
+    ",": 'comma_delim',
+    "\\": 'backslash'
 }
