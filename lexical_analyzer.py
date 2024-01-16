@@ -275,6 +275,8 @@ def classify_lexeme(lexeme, is_partof_str=None):
         return KEYWORDS[lexeme.lower()]
     elif lexeme.lower() in BUILTIN_FUNC:
         return BUILTIN_FUNC[lexeme.lower()]
+    elif lexeme.lower() in BUILTIN_MET:
+        return BUILTIN_MET[lexeme.lower()]
     elif lexeme in OPERATORS:
         return OPERATORS[lexeme.lower()]
     elif lexeme in SPECIAL_CHAR:

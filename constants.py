@@ -44,40 +44,48 @@ builtin_func = [
     'cal_NAI',
     'cal_vol_strain',
     'cal_intensity',
-    'cal_magnitude'
+    'cal_magnitude',
+    'abs',
+    'max',
+    'min',
+    'len',
+    'sorted',
+    'reversed',
+    'type'    
 ]
 
 BUILTIN_FUNC = {func: f'{func}_func' for func in builtin_func}
 
+builtin_met = [
+    'capitalize',
+    'upper',
+    'lower',
+    'isupper',
+    'islower'
+]
 
+BUILTIN_MET = {met: f'{met}_met' for met in builtin_met}
 
 ########################################
 # OPERATORS
 ########################################
 ASS_OP = {
-    '=': 'assign_op',
-    '+=': 'add_assign_op',
-    '-=': 'subtract_assign_op',
-    '*=': 'multiply_assign_op',
-    '/=': 'divide_assign_op',
-    '%=': 'modulo_assign_op',
-    '^=': 'power_assign_op'
+    '=': 'assign',
+    '+=': 'add_assign',
+    '-=': 'sub_assign',
+    '*=': 'mul_assign',
+    '/=': 'div_assign',
+    '%=': 'mod_assign',
+    '^=': 'pow_assign'
 }
+
 
 ARITHMETIC_OP = {
-    '+': 'addition_op',
-    '-': 'subtraction_op',
-    '*': 'multiplication_op',
-    '/': 'division_op',
-    '^': 'power_op'
-}
-
-ASSIGNMENT_OP = {
-    '+=': 'plus_or_equal_op',
-    '-=': 'minus_or_equal_op',
-    '/=': 'div_or_equal_op',
-    '*=': 'mult_or_equal_op',
-    
+    '+': 'add_op',
+    '-': 'sub_op',
+    '*': 'mult_op',
+    '/': 'div_op',
+    '^': 'pow_op'
 }
 
 LOGICAL_OP = {
@@ -87,12 +95,12 @@ LOGICAL_OP = {
 }
 
 COMPARISON_OP = {
-    '==': 'equal_op',
-    '!=': 'not_equal_op',
-    '>': 'greater_than_op',
-    '<': 'less_than_op',
-    '>=': 'greater_than_or_equal_op',
-    '<=': 'less_than_or_equal_op'
+    '==': 'eq_op',
+    '!=': 'neq_op',
+    '>': 'gt_op',
+    '<': 'lt_op',
+    '>=': 'gte_op',
+    '<=': 'lte_op'
 }
 
 OPERATORS = {**ASS_OP, **ARITHMETIC_OP, **LOGICAL_OP, **COMPARISON_OP}
@@ -111,8 +119,8 @@ SPECIAL_CHAR = {
     '{': 'left_curly',
     '}': 'right_curly',
     ';': 'semi_colon',
-    '"': 'double_quotation',
-    "'": 'single_quotation',
+    '"': 'double_quo',
+    "'": 'single_quo',
     ".": 'period_delim',
     ",": 'comma_delim',
     "\\": 'backslash'
