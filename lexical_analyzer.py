@@ -118,18 +118,17 @@ def tokenizer(contents):
             # Check for the start of the string
             if char in ('"', "'") and has_succeeding_quotes and not start_quote:
                 start_quote = char
-                are_quotes_even = line.count(start_quote) % 2 == 0
+                substring = line[index+1:]
                 
-                # Find the last occurrence of start_quote in the entire line
-                if are_quotes_even:
-                    idx_end_quote = line.rfind(start_quote) 
+                idx_end_quote = line[index+1:].find(start_quote) 
+                idx_end_quote = idx_end_quote + index + 1
                 
-                # Find the first occurrence of start_quote in the entire line
-                else:
-                    idx_end_quote = line[index+1:].find(start_quote) 
-                    idx_end_quote += 1
-                    
                 is_char_partof_str = True
+                if temp_str:
+                    temp_str = temp_str.strip()
+                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    temp_str = ""
+                    
                 tokens.append((classify_lexeme(char), char))
                 continue
             
