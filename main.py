@@ -19,7 +19,7 @@ def main():
 
     try:
         tokens = parse(file_path)
-    except FileNotFoundError:
+    except:
         print(f"Error: File '{file_path}' not found.")
         return
     
