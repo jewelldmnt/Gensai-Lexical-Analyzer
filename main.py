@@ -1,6 +1,7 @@
 import pandas as pd
 from lexical_analyzer import parse
 from output import output
+from constants import SPECIAL_CHAR, OPERATORS
 
 def main():
     '''
@@ -23,6 +24,17 @@ def main():
         return
     
     data = []
+    
+    number_dot = 0
+    for char in file_name:
+        if (char in SPECIAL_CHAR or char in OPERATORS) and char !='.':
+            print("Error: Invalid file extension. Don't include special character.")
+            return
+        if char == '.':
+            number_dot += 1
+        if number_dot >= 2:
+            print("Error: Invalid file extension. You must have only one file extension.")
+            return
 
     if not file_path.endswith(".gs"):
         print("Error: Invalid file extension. Only '.gs' files are allowed.")
