@@ -40,12 +40,8 @@ def main():
         print("Error: Invalid file extension. Only '.gsai' files are allowed.")
         return
 
-    for line_num, line_code in enumerate(tokens, start=1):
-        for token, lexeme in line_code:
-            data.append([line_num, lexeme, token])
-
     # Create a DataFrame
-    df = pd.DataFrame(data, columns=['Line', 'Lexeme', 'Token'])
+    df = pd.DataFrame(tokens, columns=['Line', 'Lexeme', 'Token'])
     
     output(df)
 

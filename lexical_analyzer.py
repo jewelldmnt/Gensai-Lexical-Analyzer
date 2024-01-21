@@ -19,7 +19,7 @@ def tokenizer(contents):
     """
     all_tokens = []
 
-    for line in contents.split('\n'):
+    for line_num, line in enumerate(contents.split('\n')):
         tokens = []
         line = line.strip()
         temp_str = ""
@@ -28,6 +28,7 @@ def tokenizer(contents):
         idx_end_quote = ""
         idx_right_brace = ""
         is_char_partof_braces = False
+        line_num += 1
 
         for index, char in enumerate(line):
             next_char = line[index+1] if index+1 < len(line) else '' 
@@ -37,9 +38,9 @@ def tokenizer(contents):
             ################################################################################
             if char == "#" and not is_char_partof_str:
                 if temp_str:
-                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    tokens.append([line_num, temp_str, classify_lexeme(temp_str)])
                 temp_str = line[index:] # Extracts the substring from the 'index' position to the end of the 'line'.
-                tokens.append((classify_lexeme(temp_str), temp_str))
+                tokens.append([line_num, temp_str, classify_lexeme(temp_str)])
                 temp_str = ""
                 break
             
@@ -49,7 +50,7 @@ def tokenizer(contents):
             ################################################################################
             if (char.isspace()):
                 if not is_char_partof_str and temp_str:
-                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    tokens.append([line_num, temp_str, classify_lexeme(temp_str)])
                     temp_str = ""
                 elif is_char_partof_str:
                     temp_str += char
@@ -82,10 +83,10 @@ def tokenizer(contents):
                 
                 if temp_str:
                     temp_str = temp_str.strip()
-                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    tokens.append([line_num, temp_str, classify_lexeme(temp_str)])
                     temp_str = ""
     
-                tokens.append((classify_lexeme(char), char))
+                tokens.append([line_num, temp_str, classify_lexeme(temp_str)])
                 continue
             
             # Check for the end of the string
@@ -94,9 +95,9 @@ def tokenizer(contents):
                 
                 if temp_str:
                     temp_str = temp_str.strip()
-                    tokens.append((classify_lexeme(temp_str, is_partof_str=True), temp_str))
+                    tokens.append([line_num, temp_str, classify_lexeme(temp_str, is_partof_str=True)])
 
-                tokens.append((classify_lexeme(char), char))
+                tokens.append([line_num, char, classify_lexeme(char)])
                 temp_str = ""
                 start_quote = ""
                 idx_end_quote = ""
@@ -113,15 +114,15 @@ def tokenizer(contents):
                     if idx_right_brace > idx_left_braces and idx_right_brace < idx_end_quote:
                         is_char_partof_braces = True
                         if temp_str:
-                            tokens.append((classify_lexeme(temp_str, is_partof_str=True), temp_str))
+                            tokens.append([line_num, temp_str, classify_lexeme(temp_str, is_partof_str=True)])
                             temp_str = ""
                             
-                        tokens.append((classify_lexeme(char), char))
+                        tokens.append([line_num, char, classify_lexeme(char)])
                         
                     else:
                         if temp_str:
-                            tokens.append((classify_lexeme(temp_str), temp_str))
-                        tokens.append((classify_lexeme(char), char))
+                            tokens.append([line_num, temp_str, classify_lexeme(temp_str)])
+                        tokens.append([line_num, char, classify_lexeme(char)])
                         temp_str = ""
                         idx_right_brace = ""
 
@@ -130,15 +131,15 @@ def tokenizer(contents):
                         is_char_partof_braces = False
                         idx_right_brace = ""
                         if temp_str:
-                            tokens.append((classify_lexeme(temp_str), temp_str))
-                        tokens.append((classify_lexeme(char), char))
+                            tokens.append([line_num, temp_str, classify_lexeme(temp_str)])
+                        tokens.append([line_num, char, classify_lexeme(char)])
                         temp_str = ""
                         
                 else:
                     if temp_str:
-                        tokens.append((classify_lexeme(temp_str, is_partof_str=True), temp_str))
+                        tokens.append([line_num, temp_str, classify_lexeme(temp_str, is_partof_str=True)])
                         temp_str = ""
-                    tokens.append((classify_lexeme(char), char))                      
+                    tokens.append([line_num, char, classify_lexeme(char)])                
                     
             # Check for strings
             elif is_char_partof_str and not is_char_op_specialchar and not is_char_partof_braces:
@@ -151,15 +152,15 @@ def tokenizer(contents):
                 is_dot_partof_number = (temp_str.replace('.', '').isdigit() and char == '.')
                 if temp_str and temp_str not in OPERATORS and prev_char not in OPERATORS and not is_dot_partof_number:
                     if is_char_partof_str and not is_char_partof_braces:
-                        tokens.append((classify_lexeme(temp_str, is_partof_str=True), temp_str))
+                        tokens.append([line_num, temp_str, classify_lexeme(temp_str, is_partof_str=True)])
                     else:
                         temp_str = temp_str.strip()
-                        tokens.append((classify_lexeme(temp_str), temp_str))
+                        tokens.append([line_num, temp_str, classify_lexeme(temp_str)])
                     temp_str = ""
 
                 if is_char_compound_op and next_char not in OPERATORS:
                     temp_str += char
-                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    tokens.append([line_num, temp_str, classify_lexeme(temp_str)])
                     temp_str = ""
                     continue    
                       
@@ -167,7 +168,7 @@ def tokenizer(contents):
                     temp_str += char
                 
                 elif is_char_single_op:
-                    tokens.append((classify_lexeme(char), char))
+                    tokens.append([line_num, char, classify_lexeme(char)]) 
                 
                 elif char in SPECIAL_CHAR:
                     # Check if the character 'char' is a period and if it is part of a valid number
@@ -175,7 +176,7 @@ def tokenizer(contents):
                     if  is_period_partof_number:
                         temp_str += char
                     else:
-                        tokens.append((classify_lexeme(char), char))
+                        tokens.append([line_num, char, classify_lexeme(char)]) 
                         continue    
                 else:
                     temp_str += char                
@@ -184,7 +185,7 @@ def tokenizer(contents):
             elif next_char not in OPERATORS and prev_char in OPERATORS:
                 if temp_str:
                     temp_str = temp_str.strip()
-                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    tokens.append([line_num, temp_str, classify_lexeme(temp_str)])
                     temp_str = ""
                 temp_str += char
             
@@ -195,10 +196,10 @@ def tokenizer(contents):
         # Add any remaining non-empty string as a token
         if temp_str:
             temp_str = temp_str.strip()
-            tokens.append((classify_lexeme(temp_str), temp_str))
+            tokens.append([line_num, temp_str, classify_lexeme(temp_str)])
+            
+        all_tokens.extend(tokens)
         
-        all_tokens.append(tokens)
-
     return all_tokens
 
 
