@@ -1,4 +1,4 @@
-import pandas as pd
+import prettytable
 from lexical_analyzer import parse
 from output import output
 from constants import SPECIAL_CHAR, OPERATORS
@@ -40,10 +40,16 @@ def main():
         print("Error: Invalid file extension. Only '.gsai' files are allowed.")
         return
 
-    # Create a DataFrame
-    df = pd.DataFrame(tokens, columns=['Line', 'Lexeme', 'Token'])
-    
-    output(df)
+    table = prettytable.PrettyTable(["Line Number", "Lexeme", "Token"])
+    table.align["Lexeme"] = "l"
+    table.align["Token"] = "l"
+
+    for line_num, token_list in tokens.items():
+        for lexeme, token in token_list:
+            table.add_row([line_num, lexeme, token])
+
+    print("Tokens in Tabular Form:")
+    print(table)
 
 if __name__ == '__main__':
     main()
