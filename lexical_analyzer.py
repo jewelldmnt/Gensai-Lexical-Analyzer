@@ -225,7 +225,7 @@ def classify_lexeme(lexeme, is_partof_str=None):
         return OPERATORS[lexeme.lower()]
     elif lexeme in SPECIAL_CHAR:
         return SPECIAL_CHAR[lexeme]
-    elif lexeme.replace('.', '') and lexeme.count('.') == 1:
+    elif lexeme.replace('.', '').isdigit() and lexeme.count('.') == 1:
         return 'float_lit'
     elif lexeme.isdigit() and not lexeme.startswith('0') or lexeme == '0':
         return 'int_lit'
