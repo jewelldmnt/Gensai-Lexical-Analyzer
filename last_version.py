@@ -1,55 +1,10 @@
 from constants import *
-
-
-def tab_counter(string):
-    '''
-    tab_counter counts all valid indentation(4 spaces) and returns the valid and invalid indentations.
-    
-    Parameters:
-        -string (str): The line that may or may have indetations.
-
-    Returns:
-        -tab_tokens (list): A list of tuples, containing the indentation and if its valid or not.
-        -emptry list
-    '''
-    tab_tokens = []
-    
-    if string.isspace():
-        return []
-    
-    # if the string starts with a tab (4 spaces) and has non whitespaces
-    if string.startswith('    '):
-        temp_tab = ''
-        # iterate over the string per 4 places
-        for char in range(0, len(string), 4):
-            temp_tab = string[char:char+4]
-            if temp_tab == '    ':
-                temp_tab = ''
-                tab_tokens.append(('indent', '\t'))
-            # if the first character in the segment is a whitespace and any of the preceeding three are not, add invalid indent token
-            elif temp_tab[0] == ' ' and any(c != ' ' for c in temp_tab[1:3]):
-                whitespace = ''
-                for char2 in temp_tab:
-                    if char2.isspace():
-                        whitespace += '\s'
-                    else:
-                        break
-                tab_tokens.append(('invalid_indent', whitespace))
-                break
-            else:
-                break
-        return tab_tokens
-    elif string.startswith(' '):
-        whitespace = ''
-        for x in string:
-            if x.isspace():
-                whitespace+='\s'
-            else:
-                break
-        tab_tokens.append(('invalid_indent', whitespace))
-        return tab_tokens
-    else:
-        return []
+################################################################################
+# This the version of what we presented in f2f lexical analyzer presentation 
+# where: 
+# 1.2.3 is not invalid 
+# +++ is not invalid
+################################################################################
 
 
 def tokenizer(contents):
@@ -66,7 +21,6 @@ def tokenizer(contents):
 
     for line in contents.split('\n'):
         tokens = []
-        tokens = tokens + tab_counter(line)
         line = line.strip()
         temp_str = ""
         is_char_partof_str = False # Flag to track whether the current character is inside quotes or not
@@ -77,7 +31,7 @@ def tokenizer(contents):
 
         for index, char in enumerate(line):
             next_char = line[index+1] if index+1 < len(line) else '' 
-            prev_char = temp_str[-1] if temp_str else ''
+            
             ################################################################################
             # CHECKING OF COMMENTS
             ################################################################################
@@ -201,15 +155,13 @@ def tokenizer(contents):
                     tokens.append((classify_lexeme(temp_str), temp_str))
                     temp_str = ""
                     continue    
-                      
+                    
+                elif is_char_single_op:
+                    tokens.append((classify_lexeme(char), char))  
+                    continue           
+                                    
                 elif is_char_partof_compound_op:
                     temp_str += char
-                
-                elif char in OPERATORS and next_char in OPERATORS and not is_char_partof_compound_op:
-                    temp_str += char
-                
-                elif char in OPERATORS and temp_str not in OPERATORS:
-                    tokens.append((classify_lexeme(char), char))
                 
                 elif char in SPECIAL_CHAR:
                     # Check if the character 'char' is a period and if it is part of a valid number
@@ -218,20 +170,38 @@ def tokenizer(contents):
                         temp_str += char
                     else:
                         tokens.append((classify_lexeme(char), char))
-                        continue    
-                else:
-                    temp_str += char                
-            
-            elif next_char not in OPERATORS and prev_char in OPERATORS:
-                if temp_str:
-                    temp_str = temp_str.strip()
-                    tokens.append((classify_lexeme(temp_str), temp_str))
-                    temp_str = ""
-                temp_str += char
-            
+                        continue                    
             else:
                 temp_str += char
+                
+                
+            ################################################################################
+            # CHECKING OF VALID NUMBERS
+            ################################################################################
+            if next_char == '.' and temp_str and not is_char_partof_str:
+                # Check for cases like a1
+                if is_valid_identifier(temp_str):
+                    temp_str = temp_str.strip()
+                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    temp_str = ""                    
             
+            # Check if the next character is not part of a number
+            next_char_is_not_partof_number = temp_str.replace('.', '').isdigit() and not next_char.isdigit()
+            if next_char_is_not_partof_number: 
+                
+                # Check if it is a complete decimal
+                is_decimal_full = next_char == '.' and temp_str.count('.') == 1
+                if is_decimal_full:
+                    temp_str = temp_str.strip()
+                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    temp_str = ""  
+                
+                # Check if the current temp_str is not followed by a digit or a period
+                # Check for cases like 1a
+                elif not next_char.isdigit() and next_char != '.':
+                    temp_str = temp_str.strip()
+                    tokens.append((classify_lexeme(temp_str), temp_str))
+                    temp_str = ""  
         
         # Add any remaining non-empty string as a token
         if temp_str:
@@ -265,9 +235,9 @@ def classify_lexeme(lexeme, is_partof_str=None):
         return OPERATORS[lexeme.lower()]
     elif lexeme in SPECIAL_CHAR:
         return SPECIAL_CHAR[lexeme]
-    elif lexeme.isdigit() and '.' in lexeme:
+    elif lexeme.replace('.', '') and lexeme.count('.') == 1:
         return 'float_lit'
-    elif lexeme.isdigit() and not lexeme.startswith('0'):
+    elif lexeme.isdigit() and not lexeme.startswith('0') or lexeme == '0':
         return 'int_lit'
     elif is_valid_identifier(lexeme):
         return 'identifier'

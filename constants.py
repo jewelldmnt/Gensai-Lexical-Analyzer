@@ -70,13 +70,13 @@ BUILTIN_MET = {met: f'{met}_met' for met in builtin_met}
 # OPERATORS
 ########################################
 ASS_OP = {
-    '=': 'assign',
-    '+=': 'add_assign',
-    '-=': 'sub_assign',
-    '*=': 'mul_assign',
-    '/=': 'div_assign',
-    '%=': 'mod_assign',
-    '^=': 'pow_assign'
+    '=': 'ass',
+    '-=': 'sub_ass',
+    '+=': 'add_ass',
+    '*=': 'mul_ass',
+    '/=': 'div_ass',
+    '%=': 'mod_ass',
+    '^=': 'pow_ass'
 }
 
 
@@ -112,15 +112,15 @@ OPERATORS = {**ASS_OP, **ARITHMETIC_OP, **LOGICAL_OP, **COMPARISON_OP}
 
 SPECIAL_CHAR = {
     ':': 'colon_delim',
-    '(': 'left_paren',
-    ')': 'right_paren',
-    '[': 'left_bracket',
-    ']': 'right_bracket',
-    '{': 'left_curly',
-    '}': 'right_curly',
+    '(': 'l_paren',
+    ')': 'r_paren',
+    '[': 'l_bracket',
+    ']': 'r_bracket',
+    '{': 'l_curly',
+    '}': 'r_curly',
     ';': 'semi_colon',
-    '"': 'double_quo',
-    "'": 'single_quo',
+    '"': 'd_quo',
+    "'": 's_quo',
     ".": 'period_delim',
     ",": 'comma_delim',
     "\\": 'backslash'
