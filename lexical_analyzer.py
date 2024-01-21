@@ -150,7 +150,7 @@ def tokenizer(contents):
             elif is_char_op_specialchar:
                 # Check if the character 'char' is a period and if it is not part of a valid number
                 is_dot_partof_number = (temp_str.replace('.', '').isdigit() and char == '.')
-                if temp_str and temp_str not in OPERATORS and prev_char not in OPERATORS and not is_dot_partof_number:
+                if temp_str and temp_str not in OPERATORS and prev_char not in OPERATORS and not is_dot_partof_number and is_dot_partof_number != False: 
                     if is_char_partof_str and not is_char_partof_braces:
                         tokens.append((temp_str, classify_lexeme(temp_str, is_partof_str=True)))
                     else:
