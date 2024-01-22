@@ -23,8 +23,6 @@ def main():
         print(f"Error: File '{file_path}' not found.")
         return
     
-    data = []
-    
     number_dot = 0
     for char in file_name:
         if (char in SPECIAL_CHAR or char in OPERATORS) and char !='.':

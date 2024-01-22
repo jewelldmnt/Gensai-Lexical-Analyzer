@@ -210,7 +210,8 @@ def tokenizer(contents):
             temp_str = temp_str.strip()
             tokens.append((temp_str, classify_lexeme(temp_str)))
             
-        all_tokens.update({line_num: tokens})
+        if len(tokens) > 0:
+            all_tokens.update({line_num: tokens})
         
     return all_tokens
 
