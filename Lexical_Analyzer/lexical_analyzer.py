@@ -4,8 +4,7 @@
 # if +++ then invalid
 ################################################################################
 
-from constants import *
-
+from Lexical_Analyzer.constants import *
 
 def tokenizer(contents):
     """
