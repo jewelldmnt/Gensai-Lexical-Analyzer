@@ -11,7 +11,7 @@
     },
 
     {
-      "name": "Python: main.py",
+      "name": "Python: run_syntax.py",
       "type": "python",
       "request": "launch",
       "program": "main.py",

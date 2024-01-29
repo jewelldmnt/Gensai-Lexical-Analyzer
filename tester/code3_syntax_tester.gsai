@@ -1,0 +1,17 @@
+from hatdog import cheese, mayo
+from hatdog import cheese
+import pandas as pd
+
+func main(int: x):
+    str: x = "string"
+    str: x = "string'
+    int: a = x
+    float: velocity = cal_velocity(2, 3, 1)
+    float: velocity = 3.4
+    float: velocity = '34'
+
+    if velocity.isdigit():
+        out: "Velocity: {velocity} is not speed."
+        out: "Velocity: {"
+        out: "Velocity: 'is not speed' but {}"
+

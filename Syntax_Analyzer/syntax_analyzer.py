@@ -1,13 +1,18 @@
 from Lexical_Analyzer.lexical_analyzer import tokenizer
 from Syntax_Analyzer.production_rule import *
+from copy import copy
 
 
 
 class Syntax_Analyzer():
-    def __init__(self):
-        pass
+    def __init__(self, file):
+        self.file_path = file
+        self.contents = open(file, 'r').read()
+        self.lex_analysis = None
+        self.syntax_errors = None
+        self.all_syntax_error = {}
     
-    def parse(self, file):
+    def parse(self):
         """
         Parses the contents of a file using a lexer.
 
@@ -17,13 +22,9 @@ class Syntax_Analyzer():
         Returns:
             tokens (list): A list of tokens representing the parsed content.
         """
-        
-        self.file_path = file
-        contents = open(file, 'r').read()
-        lex_analysis = tokenizer(contents)
-        syntax_errors = self.syntax_analyzer(lex_analysis)
-        
-        return syntax_errors
+        self.lex_analysis = tokenizer(self.contents)
+        self.syntax_errors = self.syntax_analyzer(self.lex_analysis)
+        return copy(self.syntax_errors)
     
     
     def syntax_analyzer(self, lex_analysis):
@@ -36,15 +37,13 @@ class Syntax_Analyzer():
         Returns:
             all_syntax_errors (dict): A dictionary containing syntax errors mapped to their respective line numbers.
         """
-        
-        all_syntax_error = {}
-        
         for line_num, token_list in lex_analysis.items():
             syntax_error = []
             
             # Extract token elements from the token list and store in syntax list
             syntax = [item[1] for item in token_list]
             code = self.get_code(line_num)
+            # Call function that calculates the accuracy of the syntax
             prod_rule_name, prod_rule_idx, accuracy= self.calculate_accuracy(syntax)
             
             if 'invalid' in syntax:
@@ -60,9 +59,9 @@ class Syntax_Analyzer():
                 code = self.get_code(line_num) 
                 syntax_error.append((code, f'Invalid Syntax', f'kase mama mo blue'))
 
-            all_syntax_error.update({line_num: syntax_error})
+            self.all_syntax_error.update({line_num: syntax_error})
         
-        return all_syntax_error
+        return copy(self.all_syntax_error)
         
         
     def describe_error(self, syntax, rule_name, rule_index):
@@ -117,8 +116,12 @@ class Syntax_Analyzer():
                 # Extract elements enclosed in <>
                 rule_elements = [element.strip('<>') for element in rule.split('><')]
                 
-                # Pair up actual and expected elements for comparison
-                zipped_tokens = zip(syntax, rule_elements)
+                # Nested If else statement that handles compound statements
+                if len(rule_elements) >= len(syntax) or rule_elements[0] != syntax[0]:
+                    # Pair up actual and expected elements for comparison
+                    zipped_tokens = zip(syntax, rule_elements)
+                else:
+                    zipped_tokens = self.compound_checker(rule_name,rule_elements,syntax)
                 
                 # Calculate accuracy as the ratio of correctly matched elements
                 accuracy = sum(a == b for a, b in zipped_tokens) / max(len(syntax), len(rule_elements))
@@ -130,6 +133,26 @@ class Syntax_Analyzer():
                     matching_index = idx
 
         return matching_rule, matching_index, max_accuracy
+    
+    def compound_checker(self,rule_name,rule_elements,syntax):
+        if rule_name == 'Import Statement' and rule_elements[0] == syntax[0]:
+            x = len(syntax) - len(rule_elements)
+            while x > 0:
+                rule_elements.append('comma_delim')
+                rule_elements.append('identifier')
+                x -= 2
+            return zip(syntax, rule_elements)
+        elif rule_name == 'Function Statement' and rule_elements[0] == syntax[0]:
+            
+            x = len(syntax) - len(rule_elements)
+            while x > 0:
+                rule_elements.append('dt')
+                rule_elements.append('colon_delim')
+                rule_elements.append('identifier')
+                x -= 3
+            return zip(syntax, rule_elements)
+        else:
+            return zip(syntax, rule_elements)
 
 
 
