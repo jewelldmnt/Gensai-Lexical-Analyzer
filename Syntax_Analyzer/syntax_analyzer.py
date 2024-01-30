@@ -1,6 +1,8 @@
 from Lexical_Analyzer.lexical_analyzer import tokenizer
 from Syntax_Analyzer.production_rule import *
 from copy import copy
+from itertools import zip_longest
+
 
 
 
@@ -11,6 +13,7 @@ class Syntax_Analyzer():
         self.lex_analysis = None
         self.syntax_errors = None
         self.all_syntax_error = {}
+    
     
     def parse(self):
         """
@@ -76,22 +79,16 @@ class Syntax_Analyzer():
             expected (str): The expected token in the 'actual' token.
             actual (int): The actual token that is syntactically incorrect.
         """
-        # If the syntax are not of the same length append to the shorter list
-        if len(rule_syntax) > len(actual_syntax):
-            actual_syntax.append('None')
-        elif len(rule_syntax) < len(actual_syntax):
-            rule_syntax.append('None')
 
         # Pair up actual and expected elements for comparison
-        comparison = zip(rule_syntax, actual_syntax)
-        for expected, actual in comparison:
+        comparison = zip_longest(actual_syntax, rule_syntax, fillvalue='None')
+        for actual, expected in comparison:
             if actual != expected:
                 return f"Expected {expected} but encounted {actual}"
         return None
     
-    
         
-    def calculate_accuracy(self, syntax):
+    def calculate_accuracy(self, actual_syntax):
         """
         Calculates the accuracy of the given syntax against the predefined production rules.
 
@@ -106,72 +103,76 @@ class Syntax_Analyzer():
         
         max_accuracy = 0
         matching_rule = None
+        rule_name = ""
+        
+        if actual_syntax[0].endswith("_dt"):
+            rule_name = "Declaration Statement"
+        elif actual_syntax[0] == "out_kw":
+            rule_name = "Output Statement"
+        elif actual_syntax[0] in ("import_kw", "from_kw"):
+            rule_name = "Import Statement"
+        elif actual_syntax[0] == "func_kw":
+            rule_name = "Function Statement"
+            actual_syntax = self.converter(actual_syntax)
+        else:
+            return None, None, actual_syntax, 0    
+        
+        
+        for rule in PRODUCTION_RULE[rule_name]:
+            rule_syntax = [element.strip('<>') for element in rule.split('><')]
 
-        # Iterate through each production rule and its array
-        for rule_name, rule_array in PRODUCTION_RULE.items():
+            if len(rule_syntax) < len(actual_syntax) and rule_syntax[0] == actual_syntax[0]:
+                 # Zipping the compound elements
+                rule_syntax = self.compound_checker(rule_name, rule_syntax, actual_syntax)
+
+            zipped_tokens = zip(actual_syntax, rule_syntax)
             
-            # Iterate through each rule in the array
-            for idx, rule in enumerate(rule_array):
-                # Extract elements enclosed in <>
-                rule_elements = [element.strip('<>') for element in rule.split('><')]
-                
-                # Nested If else statement that handles compound statements
-                if len(rule_elements) >= len(syntax) or rule_elements[0] != syntax[0]:
-                    # Pair up actual and expected elements for comparison
-                    if syntax[0] == 'func_kw' and rule_name == 'Function Statement':
-                        syntax = self.converter(syntax)
-                    zipped_tokens = zip(syntax, rule_elements)
-                else:
-                    zipped_tokens, rule_elements, syntax = self.compound_checker(rule_name,rule_elements,syntax)
-                
-                # Calculate accuracy as the ratio of correctly matched elements
-                accuracy = sum(a == b for a, b in zipped_tokens) / max(len(syntax), len(rule_elements))
+            # Calculate accuracy as the ratio of correctly matched elements
+            accuracy = sum(a == b for a, b in zipped_tokens) / max(len(actual_syntax), len(rule_syntax))
 
-                # Update result if current rule has higher accuracy
-                if accuracy > max_accuracy:
-                    max_accuracy = accuracy
-                    matching_rule = rule_name
-                    actual_syntax = syntax
-                    rule_syntax = rule_elements
+            # Update result if current rule has higher accuracy
+            if accuracy > max_accuracy:
+                max_accuracy = accuracy
+                matching_rule = rule_name
+                expected_syntax = rule_syntax
 
-        return matching_rule, rule_syntax, actual_syntax, max_accuracy
+        return matching_rule, expected_syntax, actual_syntax, max_accuracy
+
+
     
-    def compound_checker(self,rule_name,rule_elements,syntax):
+    def compound_checker(self, rule_name, rule_syntax, actual_syntax):
         """
-        Converts the specific data types into 'dt' for bnf purposes in production rules
+        Converts the specific data types into 'dt' for BNF purposes in production rules.
 
         Parameters:
-            syntax (list): List of actual syntax where certain tokens will be converted.
+            rule_name (str): The name of the production rule.
+            rule_syntax (list): List representing the production rule syntax.
+            actual_syntax (list): List of actual syntax where certain tokens will be converted.
 
         Returns:
-            matching_rule (list): ist of converted syntax.
-
+            converted_syntax (list): List of converted syntax.
         """
-        if rule_name == 'Import Statement' and rule_elements[0] == syntax[0]:
-            x = len(syntax) - len(rule_elements)
-            while x > 0:
-                rule_elements.append('comma_delim')
-                rule_elements.append('identifier')
-                x -= 2
-            return zip(syntax, rule_elements), rule_elements, syntax
-        elif rule_name == 'Function Statement' and rule_elements[0] == syntax[0]:
-            first_last = rule_elements[-1]
-            second_last = rule_elements[-2]
-            syntax = self.converter(syntax)
-            x = len(syntax) - len(rule_elements)
-            rule_elements = rule_elements[:-2]
-            while x > 0:
-                rule_elements.append('comma_delim')
-                rule_elements.append('dt')
-                rule_elements.append('colon_delim')
-                rule_elements.append('identifier')
-                x -= 4
-            rule_elements.append(second_last)
-            rule_elements.append(first_last)
-            return zip(syntax, rule_elements), rule_elements, syntax
-        else:
-            return zip(syntax, rule_elements), rule_elements, syntax
+        excess_actual_syntax = len(actual_syntax) - len(rule_syntax)
+        if rule_name == 'Import Statement':
+            while excess_actual_syntax > 0:
+                rule_syntax.append('comma_delim')
+                rule_syntax.append('identifier')
+                excess_actual_syntax -= 2
         
+        elif rule_name == 'Function Statement':
+            # Rule Syntax without the r_paren and colon_delim
+            rule_syntax = rule_syntax[:-2]  
+            while excess_actual_syntax > 0:
+                rule_syntax.append('comma_delim')
+                rule_syntax.append('dt')
+                rule_syntax.append('colon_delim')
+                rule_syntax.append('identifier')
+                excess_actual_syntax -= 4
+            rule_syntax.extend(['r_paren', 'colon_delim'])
+        
+        return rule_syntax
+        
+    
     def converter(self, syntax):
         """
         Converts the specific data types into 'dt' for bnf purposes in production rules
@@ -185,7 +186,6 @@ class Syntax_Analyzer():
         """
         converted_syntax = ['dt' if token in DATA_TYPES else token for token in syntax]
         return converted_syntax
-
 
 
     def get_code(self, line_number):
