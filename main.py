@@ -34,8 +34,8 @@ def main():
         print(f"Error: File '{file_path}' not found.")
         return
 
-    syntax_analyzer = Syntax_Analyzer()
-    syntax_errors = syntax_analyzer.parse(file_path)
+    syntax_analyzer = Syntax_Analyzer(file_path)
+    syntax_errors = syntax_analyzer.parse()
 
     table = prettytable.PrettyTable(["Line Number", "Code", "Syntax Error", "Description"])
     table.align["Code"] = "l"
