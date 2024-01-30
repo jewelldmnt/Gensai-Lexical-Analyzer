@@ -55,8 +55,6 @@ OUT_STMT = [
 ]
 OUT_STMT = [stmt.replace(" ", "") for stmt in OUT_STMT]
 
-
-
 ########################################
 # IMPORT STATEMENTS
 ########################################
@@ -77,12 +75,18 @@ FNC_STMT = [
 FNC_STMT = [stmt.replace(" ", "") for stmt in FNC_STMT]
 
 ########################################
+# COMMENT RULE
+########################################
+COMMENT_STMT = ["<comment>"]
+
+########################################
 # PRODUCTION RULE
 ########################################
 PRODUCTION_RULE = {
     "Declaration Statement": DECLARATION_STMT,
     "Output Statement": OUT_STMT,
     "Import Statement": IMP_STMT,
-    "Function Statement": FNC_STMT
+    "Function Statement": FNC_STMT,
+    "Comment Statement": COMMENT_STMT
 }
 

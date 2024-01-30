@@ -114,6 +114,8 @@ class Syntax_Analyzer():
         elif actual_syntax[0] == "func_kw":
             rule_name = "Function Statement"
             actual_syntax = self.converter(actual_syntax)
+        elif actual_syntax[0] == "comment":
+            rule_name = "Comment Statement"
         else:
             return None, None, actual_syntax, 0    
         
