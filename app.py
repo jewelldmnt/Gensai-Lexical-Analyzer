@@ -143,8 +143,8 @@ def run_code_clicked():
     if current_filename:
         file_path = "tester/syntax_analyzer.gsai"
         save_file(file_path)
-        syntax_analyzer = Syntax_Analyzer()
-        syntax_errors = syntax_analyzer.parse(file_path)
+        syntax_analyzer = Syntax_Analyzer(file_path)
+        syntax_errors = syntax_analyzer.parse()
         clear_syntax_errors()
         syntax_error_table(syntax_errors)
     else:
