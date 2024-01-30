@@ -32,6 +32,13 @@ DECLARATION_STMT = [
     "<str_dt> <colon_delim> <identifier> <ass> <identifier>",
     "<char_dt> <colon_delim> <identifier> <ass> <identifier>",
     "<bool_dt> <colon_delim> <identifier> <ass> <identifier>",
+    
+    # Declarations of identifier but without values
+    "<int_dt> <colon_delim> <identifier>",
+    "<float_dt> <colon_delim> <identifier>",
+    "<str_dt> <colon_delim> <identifier>",
+    "<char_dt> <colon_delim> <identifier>",
+    "<bool_dt> <colon_delim> <identifier>"
 ]
 DECLARATION_STMT = [stmt.replace(" ", "") for stmt in DECLARATION_STMT]
 
