@@ -54,6 +54,12 @@ def tokenizer(contents):
                 elif is_char_partof_str:
                     temp_str += char
                 continue
+            
+            if (char in ["s", "t", "n"] and temp_str == "\\") and is_char_partof_str and not is_char_partof_braces:
+                temp_str += char
+                tokens.append((temp_str, classify_lexeme(temp_str)))
+                temp_str = ""
+                continue
 
             # Check if it's a space, operator, or special character.
             is_char_op_specialchar = char in OPERATORS or char in SPECIAL_CHAR
@@ -175,6 +181,12 @@ def tokenizer(contents):
                     tokens.append((temp_str, classify_lexeme(temp_str)))
                     temp_str = ""
                     continue    
+
+                elif char == "\\" and next_char in ["s", "n", "t"] and is_char_partof_str and not is_char_partof_braces:
+                    if temp_str:
+                        tokens.append((temp_str, classify_lexeme(temp_str, is_partof_str=True)))
+                        temp_str = ""
+                    temp_str += char
                       
                 elif is_char_partof_compound_op:
                     temp_str += char
@@ -234,6 +246,8 @@ def classify_lexeme(lexeme, is_partof_str=None):
         return BUILTIN_FUNC[lexeme.lower()]
     elif lexeme.lower() in BUILTIN_MET:
         return BUILTIN_MET[lexeme.lower()]
+    elif lexeme.lower() in ESC_SEQ:
+        return ESC_SEQ[lexeme.lower()]
     elif lexeme in OPERATORS:
         return OPERATORS[lexeme.lower()]
     elif lexeme in SPECIAL_CHAR:

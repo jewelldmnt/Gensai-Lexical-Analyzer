@@ -17,7 +17,7 @@ kw = [
 DATA_TYPES = {
     'int': 'int_dt',
     'float': 'float_dt',
-    'str': 'str_dt',
+    'str': 'string_dt',
     'char': 'char_dt',
     'bool': 'bool_dt'
 }
@@ -65,6 +65,15 @@ builtin_met = [
 ]
 
 BUILTIN_MET = {met: f'{met}_met' for met in builtin_met}
+
+########################################
+# ESCAPE SEQUENCE
+########################################
+ESC_SEQ = {
+    '\\n': 'n_es',
+    '\\t': 't_es',
+    '\\s': 's_es'
+}
 
 ########################################
 # OPERATORS
