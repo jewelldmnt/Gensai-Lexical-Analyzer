@@ -2,6 +2,7 @@ from Lexical_Analyzer.lexical_analyzer import tokenizer
 from Syntax_Analyzer.production_rule import *
 from copy import copy
 from itertools import zip_longest
+from Syntax_Analyzer.error_rule import UNEXPECTED_ERRORS, EXPECTED_ERRORS
 
 
 
@@ -58,9 +59,17 @@ class Syntax_Analyzer():
             elif accuracy > 0.5:
                 syntax_error.append((code, f'Invalid {prod_rule_name}', self.describe_error(actual_syntax, rule_syntax)))
             
-            else: # General Syntax Error
-                code = self.get_code(line_num) 
-                syntax_error.append((code, f'Invalid Syntax', f'kase mama mo blue'))
+            else: # Possible General Syntax Error
+                specific_errors = self.general_error_handler(actual_syntax)
+                code = self.get_code(line_num)
+                # If the syntax in that line has a specific error base on the error rules, append the specific description
+                if specific_errors:
+                    for error in specific_errors:
+                         # Get the tokens that made the specific error (example: token token token !!!error_token error_token!!! token token)
+                        syntax_error.append((code, f'Unexpected Token', error))
+                # Else append, general description
+                else:
+                    syntax_error.append((code, f'Invalid Syntax', f'kase mama mo blue'))
 
             self.all_syntax_error.update({line_num: syntax_error})
         
@@ -177,7 +186,8 @@ class Syntax_Analyzer():
     
     def converter(self, syntax):
         """
-        Converts the specific data types into 'dt' for bnf purposes in production rules
+        Converts the specific data types into 'dt' for bnf purposes in production rules.
+        While checking first
 
         Parameters:
             syntax (list): List of actual syntax where certain tokens will be converted.
@@ -204,3 +214,47 @@ class Syntax_Analyzer():
         with open(self.file_path, 'r') as file:
             lines = file.readlines()
             return lines[line_number - 1].strip()
+        
+    def general_error_handler(self, actual_syntax):
+        """
+        Handles the general error. Finds the exact error using a dictionary to map
+        the specific syntactical errors.
+
+        Parameters:
+            actual_syntax (list of tokens): list of tokens of the actual syntax that will be checked
+        """
+
+        # Initialize the lengths of a possible error
+        current_token_error = []
+        token_counter = 0
+
+        list_of_errors = [] # List of error if there are any
+
+        # Check if there is a specific error for the tokens number size
+        for token in actual_syntax:
+            if token_counter >= 2:
+                current_token_error.append(token)
+                if self.in_error(current_token_error[-3:]):                     #      code3_syntax_tester.gsai         synx_test1.gsai
+                    list_of_errors.append(self.in_error(current_token_error[-3:]))
+                token_counter += 1
+            elif token_counter <= 1:
+                current_token_error.append(token)
+                token_counter += 1
+            elif token_counter <= 0:
+                current_token_error.append(token)
+                token_counter += 1
+
+        if list_of_errors:
+            return list_of_errors
+        else:
+            return None
+    
+    def in_error(self, tokens):
+        tokens = ['dt' if token in DATA_TYPES else token for token in tokens]
+        temp = tokens[1]
+        tokens[1] = 'error'
+        x = ' '.join(tokens)
+        if x in UNEXPECTED_ERRORS:
+            return "Got an unexpected {} after {}".format(temp, tokens[0])
+        else:
+            return None

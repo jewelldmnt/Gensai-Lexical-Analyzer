@@ -1,11 +1,9 @@
-from hatdog import cheese, mayo
-from hatdog import cheese
-import pandas as pd
-
-func main(int: x):
+# unexpected
+func (main(int: x):
+func 2 main():
 func main(int: x, float: y):
 func main(int: x, float: y)
-    str: x = "string"
+    str x = "string"
     str: x = "string'
     int: a = x
     float: velocity = cal_velocity(2, 3, 1)
@@ -17,4 +15,5 @@ func main(int: x, float: y)
         out: "Velocity: {"
         out: "Velocity: 'is not speed' but {}"
 
+# expected
 

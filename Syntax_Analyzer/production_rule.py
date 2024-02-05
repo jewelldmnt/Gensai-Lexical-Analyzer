@@ -71,6 +71,7 @@ IMP_STMT = [stmt.replace(" ", "") for stmt in IMP_STMT]
 ########################################
 FNC_STMT = [
     "<func_kw> <identifier> <l_paren> <dt> <colon_delim> <identifier> <r_paren> <colon_delim>"
+    "<func_kw> <identifier> <l_paren> <r_paren> <colon_delim>"
 ]
 FNC_STMT = [stmt.replace(" ", "") for stmt in FNC_STMT]
 
