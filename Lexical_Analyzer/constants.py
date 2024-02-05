@@ -17,7 +17,7 @@ kw = [
 DATA_TYPES = {
     'int': 'int_dt',
     'float': 'float_dt',
-    'str': 'string_dt',
+    'str': 'str_dt',
     'char': 'char_dt',
     'bool': 'bool_dt'
 }
