@@ -1,0 +1,7 @@
+out "Velocity: {velocity} is not speed."
+# unexpected
+func (main(int: x):
+func 2 main():
+    str x = "string"
+    str: x = "string'
+bool try x: True

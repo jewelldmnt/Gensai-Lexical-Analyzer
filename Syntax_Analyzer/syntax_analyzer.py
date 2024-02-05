@@ -3,6 +3,7 @@ from Syntax_Analyzer.production_rule import *
 from copy import copy
 from itertools import zip_longest
 from Syntax_Analyzer.error_rule import UNEXPECTED_ERRORS, EXPECTED_ERRORS
+import re
 
 
 
@@ -222,39 +223,55 @@ class Syntax_Analyzer():
 
         Parameters:
             actual_syntax (list of tokens): list of tokens of the actual syntax that will be checked
+
+        Return:
+            list_of_errors (list of strings): list containing the error messages
         """
 
-        # Initialize the lengths of a possible error
-        current_token_error = []
-        token_counter = 0
+        list_of_errors = []  # List of errors if there are any
 
-        list_of_errors = [] # List of error if there are any
+        # Batch processing in chunks of 3 tokens
+        for i in range(2, len(actual_syntax)):
+            chunk = actual_syntax[i - 2:i]
+            list_of_returned_errors = self.in_error(chunk, actual_syntax[i - 3:i])
+            
+            if list_of_returned_errors:
+                list_of_errors.extend(list_of_returned_errors)  
 
-        # Check if there is a specific error for the tokens number size
-        for token in actual_syntax:
-            if token_counter >= 2:
-                current_token_error.append(token)
-                if self.in_error(current_token_error[-3:]):                     #      code3_syntax_tester.gsai         synx_test1.gsai
-                    list_of_errors.append(self.in_error(current_token_error[-3:]))
-                token_counter += 1
-            elif token_counter <= 1:
-                current_token_error.append(token)
-                token_counter += 1
-            elif token_counter <= 0:
-                current_token_error.append(token)
-                token_counter += 1
-
-        if list_of_errors:
-            return list_of_errors
-        else:
-            return None
+        return list_of_errors if list_of_errors else None
     
-    def in_error(self, tokens):
-        tokens = ['dt' if token in DATA_TYPES else token for token in tokens]
-        temp = tokens[1]
-        tokens[1] = 'error'
-        x = ' '.join(tokens)
-        if x in UNEXPECTED_ERRORS:
-            return "Got an unexpected {} after {}".format(temp, tokens[0])
+    def in_error(self, two_tokens, three_tokens=None):
+        """
+        Checks the dictionary and list in error_rule.py and returns a corresponding error message
+
+        Parameters:
+            two_tokens (list of tokens): list of tokens that are a size of 2 that is used for finding expected errors
+            three_tokens (list of tokens or None): list of tokens that are a size of 3 that is used for finding unexpected errors
+
+        Return:
+            errors (list of strings): list containing the error messages
+        """
+        # Initialize variables and format the lists into strings
+        errors = []
+        two_bit_token = ' '.join(two_tokens)
+        modified_token = re.sub(r'(\w+)_dt (\w+)', lambda match: f"dt {'error' if match.group(2) != 'colon_delim' else 'colon_delim'}", two_bit_token)
+
+        if three_tokens is not None and len(three_tokens) >= 2:
+            temp = three_tokens[1]
+            three_tokens[1] = 'error'
+            three_bit_token = ' '.join(three_tokens)
+        else:
+            three_bit_token = None
+
+        # Append to the error list the syntactic error
+        if three_bit_token in UNEXPECTED_ERRORS and len(three_tokens) == 3:
+            errors.append("Got an unexpected {} after {}".format(temp, three_tokens[0]))
+        
+        if modified_token in EXPECTED_ERRORS:
+            expected_token = EXPECTED_ERRORS[modified_token]
+            errors.append("Expected a {} but encountered {}".format(expected_token, two_tokens[1]))
+        
+        if errors:
+            return errors
         else:
             return None
