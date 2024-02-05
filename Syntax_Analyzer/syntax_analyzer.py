@@ -124,7 +124,7 @@ class Syntax_Analyzer():
 
             if len(rule_syntax) < len(actual_syntax) and rule_syntax[0] == actual_syntax[0]:
                  # Zipping the compound elements
-                rule_syntax = self.generate_comp_prod_rules(rule_name, rule_syntax, actual_syntax)
+                rule_syntax = self.generate_compound_prod_rules(rule_name, rule_syntax, actual_syntax)
 
             # print(f'Actual Syntax: {actual_syntax}\n Rule syntax: {rule_syntax}')
             zipped_tokens = zip(actual_syntax, rule_syntax)
