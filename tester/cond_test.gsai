@@ -1,4 +1,4 @@
-if(a == b and (b >= 2.3 || !c)):
+if((a == b) and (b >= 2.3 || !c)):
     out: a
 elif (not isvalid):
     out: b
@@ -7,3 +7,8 @@ else:
 
 elif (a > b):
     out: chonghEyFatcHoy
+
+if a == b:
+    out: as
+
+if digit.islower():
