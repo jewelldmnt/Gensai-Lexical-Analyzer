@@ -11,12 +11,6 @@ unexpected_errors = [
     'str_dt error colon_delim',
     'char_dt error colon_delim',
     'bool_dt error colon_delim',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
 ]
 UNEXPECTED_ERRORS = [error.replace(" ", " ") for error in unexpected_errors]
 

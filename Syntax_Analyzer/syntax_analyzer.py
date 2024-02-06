@@ -254,7 +254,10 @@ class Syntax_Analyzer():
         # Initialize variables and format the lists into strings
         errors = []
         two_bit_token = ' '.join(two_tokens)
+
+        # Normalize the token using regular expression
         modified_token = re.sub(r'(\w+)_dt (\w+)', lambda match: f"dt {'error' if match.group(2) != 'colon_delim' else 'colon_delim'}", two_bit_token)
+        modified_token = re.sub(r'(\w+)_dt (\w+)|out_kw (\w+)', lambda match: f"out_kw {'error' if match.group(2) and match.group(2) != 'colon_delim' else 'colon_delim' if match.group(3) == 'colon_delim' else 'error'}", modified_token)
 
         if three_tokens is not None and len(three_tokens) >= 2:
             temp = three_tokens[1]
