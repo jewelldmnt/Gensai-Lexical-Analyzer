@@ -43,6 +43,26 @@ DECLARATION_STMT = [
 DECLARATION_STMT = [stmt.replace(" ", "") for stmt in DECLARATION_STMT]
 
 ########################################
+# INPUT STATEMENTS
+########################################
+IN_STMT = [
+    "<in_kw> <l_paren> <r_paren>",
+    "<in_kw> <l_paren> <s_quo> <str_lit> <s_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <str_lit> <d_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <char_lit> <d_quo> <r_paren>",
+    "<in_kw> <l_paren> <s_quo> <char_lit> <s_quo> <r_paren>",
+    "<in_kw> <l_paren> <str_lit> <r_paren>",
+    "<in_kw> <l_paren> <identifier> <r_paren>",
+    "<in_kw> <l_paren> <s_quo> <identifier> <s_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <identifier> <d_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <str_lit> <l_curly> <identifier> <r_curly> <str_lit> <d_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <str_lit> <l_curly> <identifier> <r_curly> <d_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <l_curly> <identifier> <r_curly> <str_lit> <l_curly> <identifier> <r_curly> <str_lit> <d_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <l_curly> <identifier> <r_curly> <str_lit> <l_curly> <identifier> <r_curly> <d_quo> <r_paren>",
+]
+IN_STMT = [stmt.replace(" ", "") for stmt in IN_STMT]
+
+########################################
 # OUTPUT STATEMENTS
 ########################################
 OUT_STMT = [
@@ -51,7 +71,16 @@ OUT_STMT = [
     "<out_kw> <colon_delim> <float_lit>",
     "<out_kw> <colon_delim> <identifier>",
     "<out_kw> <colon_delim> <bool_lit>",
-    "<out_kw> <colon_delim> <str_lit>"
+    "<out_kw> <colon_delim> <d_quo> <str_lit> <d_quo>",
+    "<out_kw> <colon_delim> <s_quo> <str_lit> <s_quo>",
+    "<out_kw> <colon_delim> <d_quo> <char_lit> <d_quo>",
+    "<out_kw> <colon_delim> <s_quo> <char_lit> <s_quo>",
+    "<out_kw> <colon_delim> <s_quo> <identifier> <s_quo>",
+    "<out_kw> <colon_delim> <d_quo> <identifier> <d_quo>",
+    "<out_kw> <colon_delim> <d_quo> <str_lit> <l_curly> <identifier> <r_curly> <str_lit> <d_quo>",
+    "<out_kw> <colon_delim> <d_quo> <str_lit> <l_curly> <identifier> <r_curly> <d_quo>",
+    "<out_kw> <colon_delim> <d_quo> <l_curly> <identifier> <r_curly> <str_lit> <l_curly> <identifier> <r_curly> <str_lit> <d_quo>",
+    "<out_kw> <colon_delim> <d_quo> <l_curly> <identifier> <r_curly> <str_lit> <l_curly> <identifier> <r_curly> <d_quo>",
 ]
 OUT_STMT = [stmt.replace(" ", "") for stmt in OUT_STMT]
 
@@ -96,6 +125,7 @@ COMMENT_STMT = ["<comment>"]
 PRODUCTION_RULE = {
     "Declaration Statement": DECLARATION_STMT,
     "Output Statement": OUT_STMT,
+    "Input Statement": IN_STMT,
     "Import Statement": IMP_STMT,
     "Function Statement": FNC_STMT,
     "Comment Statement": COMMENT_STMT

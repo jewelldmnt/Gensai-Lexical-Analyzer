@@ -118,6 +118,10 @@ class Syntax_Analyzer():
             rule_name = "Declaration Statement"
         elif actual_syntax[0] == "out_kw":
             rule_name = "Output Statement"
+            actual_syntax = self.normalize(actual_syntax)
+        elif actual_syntax[0] == "in_kw":
+            rule_name = "Input Statement"
+            actual_syntax = self.normalize(actual_syntax)
         elif actual_syntax[0] in ("import_kw", "from_kw"):
             rule_name = "Import Statement"
         elif actual_syntax[0] == "func_kw":
@@ -147,6 +151,24 @@ class Syntax_Analyzer():
                 expected_syntax = rule_syntax
 
         return matching_rule, expected_syntax, actual_syntax, max_accuracy
+    
+    def normalize(self, actual_syntax):
+        input_string = ' '.join(actual_syntax)
+
+        if 'd_quo' in input_string:
+            quo_tag = 'd_quo'
+        elif 's_quo' in input_string:
+            quo_tag = 's_quo'
+        else:
+            quo_tag = None
+
+        # Replace the substrings matching the pattern with 'str_lit'
+        input_string = re.sub(r'(?:d_quo|s_quo).+?l_curly', f'{quo_tag} str_lit l_curly', input_string, flags=re.DOTALL)
+        input_string = re.sub(r'r_curly\s+(.*?)\s+(d_quo|s_quo)', f'r_curly str_lit {quo_tag}', input_string, flags=re.DOTALL)
+
+        # Split the output string back into a list
+        return input_string.split()
+
 
 
     def generate_compound_prod_rules(self, rule_name, rule_syntax, actual_syntax):
@@ -297,6 +319,7 @@ class Syntax_Analyzer():
         # Normalize the token using regular expression
         modified_token = re.sub(r'(\w+)_dt (\w+)', lambda match: f"dt {'error' if match.group(2) != 'colon_delim' else 'colon_delim'}", two_bit_token)
         modified_token = re.sub(r'(\w+)_dt (\w+)|out_kw (\w+)', lambda match: f"out_kw {'error' if match.group(2) and match.group(2) != 'colon_delim' else 'colon_delim' if match.group(3) == 'colon_delim' else 'error'}", modified_token)
+        modified_token = re.sub(r'colon_delim (\w+)_kw|colon_delim (\w+)_met|colon_delim (\w+)_func', lambda match: f"colon_delim {'key' if match.group(2) and match.group(2) != 'colon_delim' else 'colon_delim' if match.group(3) == 'colon_delim' else 'error'}", modified_token)
 
         if three_tokens is not None and len(three_tokens) >= 2:
             temp = three_tokens[1]
@@ -311,7 +334,7 @@ class Syntax_Analyzer():
         
         if modified_token in EXPECTED_ERRORS:
             expected_token = EXPECTED_ERRORS[modified_token]
-            errors.append("Expected a {} but encountered {}".format(expected_token, two_tokens[1]))
+            errors.append("Expected {} but encountered {}".format(expected_token, two_tokens[1]))
         
         if errors:
             return errors
