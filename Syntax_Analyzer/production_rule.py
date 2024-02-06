@@ -1,18 +1,14 @@
 DATA_TYPES = [
     'int_dt', 'float_dt', 'str_dt', 'char_dt', 'bool_dt'
 ]
-
-########################################
-# ASSIGNMENT STATEMENTS
-########################################
-ASS = [
-    "<identifier> <ass> <int_lit>",
-    "<identifier> <ass> <str_lit>",
-    "<identifier> <ass> <float_lit>",
-    "<identifier> <ass> <bool_lit>",
-    "<identifier> <ass> <char_lit>"
-    ]
-ASS = [stmt.replace(" ", "") for stmt in ASS]
+COMPARISON_OP = [
+    'eq_op',
+    'neq_op',
+    'gt_op',
+    'lt_op',
+    'gte_op',
+    'lte_op'
+]
 
 ########################################
 # DECLARATION STATEMENTS
@@ -132,17 +128,74 @@ RELATIONAL_STMT = [
 ]
 RELATIONAL_STMT = [stmt.replace(" ", "") for stmt in RELATIONAL_STMT]
 
+########################################
+# LOGICAL STATEMENTS
+########################################
 LOGICAL_STMT = [
     "<identifier> <and_op> <identifier>",
     "<identifier> <or_op> <identifier>",
     "<not_op> <identifier>"
 ]
 LOGICAL_STMT = [stmt.replace(" ", "") for stmt in LOGICAL_STMT]
-
+########################################
+# CONDITIONAL STATEMENTS
+########################################
 CONDT_STMT = [
     "<if_kw> <l_paren> <[CONDITION]> <r_paren> <colon_delim>"
 ]
 CONDT_STMT = [stmt.replace(" ", "") for stmt in CONDT_STMT]
+
+########################################
+# LOOP STATEMENTS
+########################################
+LOOP_STMT = [
+    # repeat loops
+    "<repeat_kw> <int_lit> <colon_delim>",
+    "<repeat_kw> <identifier> <colon_delim>",
+    "<repeat_kw> <func> <l_paren> <r_paren> <colon_delim>",
+    "<repeat_kw> <func> <l_bracket> <int_lit> <r_bracket> <colon_delim>",
+    "<repeat_kw> <func> <l_bracket> <identifier> <r_bracket> <colon_delim>",
+    "<repeat_kw> <identifier> <l_paren> <r_paren> <colon_delim>",
+    # loop controls
+    "stop_kw",
+    "skip_kw",
+    # for loops
+    "<for_kw> <identifier> <in_kw> <identifier> <colon_delim>",
+    "<for_kw> <identifier> <in_kw> <identifier> <l_bracket> <int_lit> <r_bracket> <colon_delim>",
+    "<for_kw> <identifier> <in_kw> <identifier> <l_bracket> <r_bracket> <colon_delim>",
+    "<for_kw> <identifier> <in_kw> <identifier> <l_bracket> <identifier> <r_bracket> <colon_delim>",
+    "<for_kw> <identifier> <in_kw> <identifier> <l_paren> <identifier> <r_paren> <colon_delim>",
+    "<for_kw> <identifier> <in_kw> <identifier> <l_paren> <r_paren> <colon_delim>",
+    "<for_kw> <identifier> <within_kw> <identifier> <colon_delim>",
+    "<for_kw> <identifier> <within_kw> <identifier> <l_bracket> <int_lit> <r_bracket> <colon_delim>",
+    "<for_kw> <identifier> <within_kw> <identifier> <l_bracket> <r_bracket> <colon_delim>",
+    "<for_kw> <identifier> <within_kw> <identifier> <l_bracket> <identifier> <r_bracket> <colon_delim>",
+    "<for_kw> <identifier> <within_kw> <identifier> <l_paren> <identifier> <r_paren> <colon_delim>",
+    "<for_kw> <identifier> <within_kw> <identifier> <l_paren> <r_paren> <colon_delim>",
+    # while loops
+    "<while_kw> <lit> <comp_op> <lit> <colon_delim>",
+    "<while_kw> <lit> <colon_delim>",
+    "<while_kw> <> <> <> <>",
+    "<> <> <> <> <>",
+]
+LOOP_STMT = [stmt.replace(" ", "") for stmt in LOOP_STMT]
+
+########################################
+# ASSIGNMENT STATEMENTS
+########################################
+ASS_STMT = [
+    '<identifier> <ass> <lit>',
+    '<identifier> <ass> <identifier>',
+    '<identifier> <ass> <s_quo> <lit> <s_quo>',
+    '<identifier> <ass> <d_quo> <lit> <d_quo>',
+    '<identifier> <ass> <identifier> <l_bracket> <r_bracket>',
+    '<identifier> <ass> <identifier> <l_bracket> <lit> <r_bracket>',
+    '<identifier> <ass> <identifier> <l_bracket> <identifier> <r_bracket>',
+    '<identifier> <ass> <identifier> <l_paren> <r_paren>',
+    '<identifier> <ass> <identifier> <l_paren> <identifier> <r_paren>',
+    '<while_kw> <identifier> <comp_op> <>'
+]
+ASS_STMT = [stmt.replace(" ", "") for stmt in ASS_STMT]
 
 
 ########################################
@@ -155,6 +208,8 @@ PRODUCTION_RULE = {
     "Import Statement": IMP_STMT,
     "Function Statement": FNC_STMT,
     "Comment Statement": COMMENT_STMT,
-    "If Statement": CONDT_STMT
+    "If Statement": CONDT_STMT,
+    "Loop Statement":LOOP_STMT,
+    "Assignment Statement": ASS_STMT
 }
 
