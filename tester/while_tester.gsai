@@ -1,0 +1,7 @@
+while (a and b):
+if ((a > 2) or (b == 3)):
+while (a > 2 or b == 3)
+while (a):
+while a:
+while (!a):
+while (True):
