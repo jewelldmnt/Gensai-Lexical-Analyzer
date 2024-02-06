@@ -1,0 +1,12 @@
+w = 1
+x = 2.4
+j = 'string'
+k = "string"
+l = True
+m = mama_list[x]
+m = mama_list[2]
+n = function_ko_to()
+y = function_ko_to(x)
+z = function_ko_to(x, x)
+i = function_ko_to(x, x, string)
+

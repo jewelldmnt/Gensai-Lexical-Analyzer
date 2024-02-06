@@ -6,6 +6,57 @@
 
 from Lexical_Analyzer.constants import *
 
+def tab_counter(string):
+    '''
+    tab_counter counts all valid indentation(4 spaces) and returns the valid and invalid indentations.
+    
+    Parameters:
+        -string (str): The line that may or may have indetations.
+
+    Returns:
+        -tab_tokens (list): A list of tuples, containing the indentation and if its valid or not.
+        -emptry list
+    '''
+    tab_tokens = []
+    
+    if string.isspace():
+        return []
+    
+    # if the string starts with a tab (4 spaces) and has non whitespaces
+    if string.startswith('    '):
+        temp_tab = ''
+        # iterate over the string per 4 places
+        for char in range(0, len(string), 4):
+            temp_tab = string[char:char+4]
+            if temp_tab == '    ':
+                temp_tab = ''
+                tab_tokens.append(('indent', '\\t'))
+            # if the first character in the segment is a whitespace and any of the preceeding three are not, add invalid indent token
+            elif temp_tab[0] == ' ' and any(c != ' ' for c in temp_tab[1:3]):
+                whitespace = ''
+                for char2 in temp_tab:
+                    if char2.isspace():
+                        whitespace += '\s'
+                    else:
+                        break
+                tab_tokens.append(('invalid_indent', whitespace))
+                break
+            else:
+                break
+        return tab_tokens
+    elif string.startswith(' '):
+        whitespace = ''
+        for x in string:
+            if x.isspace():
+                whitespace+='\s'
+            else:
+                break
+        tab_tokens.append(('invalid_indent', whitespace))
+        return tab_tokens
+    else:
+        return []
+
+
 def tokenizer(contents):
     """
     Tokenizes the input content into lexemes and classifies them into different token types.
@@ -20,6 +71,7 @@ def tokenizer(contents):
 
     for line_num, line in enumerate(contents.split('\n')):
         tokens = []
+        tokens = tokens + tab_counter(line)
         line = line.strip()
         temp_str = ""
         is_char_partof_str = False # Flag to track whether the current character is inside quotes or not
