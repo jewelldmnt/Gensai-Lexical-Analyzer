@@ -179,11 +179,18 @@ class Syntax_Analyzer():
 
             rule_name = "If Statement"
             actual_syntax = self.converter(actual_syntax)
+            
+        elif actual_syntax[0] == "while_kw":
+            rule_name = "While Statement"
+            actual_syntax = self.converter(actual_syntax)
+
         elif ('skip_kw' in actual_syntax or 'stop_kw' in actual_syntax) and self.in_loop == True:
             rule_name = "Loop Statement"
             self.in_loop = False
+            
         elif ('skip_kw' in actual_syntax or 'stop_kw' in actual_syntax) and self.in_loop == False:
             return 'None', None, actual_syntax, 0
+
         else:
             return None, None, actual_syntax, 0    
         
@@ -274,8 +281,6 @@ class Syntax_Analyzer():
             rule_syntax.extend(['r_paren', 'colon_delim'])
             
         if rule_name == 'If Statement':
-            rule_syntax = rule_syntax[:2] # <if_kw> <l_paren>
-            print(f'{actual_syntax[-2]} {actual_syntax[-1]}')
             if f'{actual_syntax[0]} {actual_syntax[1]}' not in ["if_kw l_paren", "elif_kw l_paren"] or f'{actual_syntax[-2]} {actual_syntax[-1]}' != "r_paren colon_delim":
                 if f'{actual_syntax[0]} {actual_syntax[1]}' not in ["if_kw l_paren", "elif_kw l_paren"] and f'{actual_syntax[-2]} {actual_syntax[-1]}' != "r_paren colon_delim":
                     rule_syntax = [actual_syntax[0], 'l_paren'] + actual_syntax[1:-2]
@@ -289,60 +294,14 @@ class Syntax_Analyzer():
                     rule_syntax.extend(['r_paren', 'colon_delim'])
                     return rule_syntax
                 
+            rule_syntax = rule_syntax[:2] # <if_kw> <l_paren>
             
-            condtl_stmt =  self.extract_parameters(actual_syntax)
-            # print(f"condtl_stmt: {condtl_stmt}")
+            rule_syntax = self.check_compound_condt(rule_syntax, actual_syntax)
 
-            condtl_list = []
-            current_cond = []
-            
-            for idx, token in enumerate(condtl_stmt):
-                if token not in ["and_kw", "or_kw", "r_paren", "l_paren", "and_op", "or_op"]:
-                    current_cond.append(token)
-                else:
-                    if current_cond:
-                        condtl_list.append(current_cond)
-                    condtl_list.append(token)
-                    current_cond = []
-            
-            if current_cond:
-                condtl_list.append(current_cond)
-            current_cond = []
+        elif rule_name == "While Statement":
+            rule_syntax = rule_syntax[:2] # <while_kw> <l_paren>
+            rule_syntax = self.check_compound_condt(rule_syntax, actual_syntax)
 
-            lparen_count = 0
-            for idx, cond in enumerate(condtl_list):
-                if cond == "l_paren" and (idx == 0 or condtl_list[idx-1] in ["and_kw", "or_kw", "and_op", "or_op"]):
-                    idx_rparen = next((idx for idx, val in reversed(list(enumerate(condtl_list))) if val == "r_paren"), None)
-                    if "r_paren" in condtl_list[idx + 1:] and (idx_rparen+1 == len(condtl_list) or condtl_list[idx+1] in ["and_kw", "or_kw", "and_op", "or_op"]):
-                        lparen_count = 1
-                        rule_syntax.append(cond)
-                        continue
-                elif cond == "r_paren" and lparen_count == 1 and  (idx+1 == len(condtl_list) or condtl_list[idx+1] in ["and_kw", "or_kw", "and_op", "or_op"]):
-                    lparen_count = 0
-                    rule_syntax.append(cond)
-                    continue
-                elif cond in ["and_kw", "or_kw", "and_op", "or_op"]:
-                    rule_syntax.append(cond)
-                else:
-                    condition = ''.join(f"<{token}>" for token in cond)
-                    if condition in LOGICAL_STMT or condition in RELATIONAL_STMT:
-                        rule_syntax.extend(condition[1:-1].split('><'))
-                    else:
-                        break
-                    
-            rule_syntax.extend(['r_paren', 'colon_delim'])    
-        if rule_name == 'Assignment Statement':
-            actual_syntax = [item for item in actual_syntax if item != 'd_quo' and item != 's_quo']
-            actual_syntax = ['identifier' if item == 'lit' else item for item in actual_syntax]
-            excess_actual_syntax = len(actual_syntax) - len(rule_syntax)
-            if excess_actual_syntax > 0:
-                while excess_actual_syntax > 0:
-                    if 'r_paren' in rule_syntax:
-                        rule_syntax.remove('r_paren')
-                    rule_syntax.append('comma_delim')
-                    rule_syntax.append('identifier')
-                    excess_actual_syntax -= 2
-                rule_syntax.append('r_paren')
         return rule_syntax
 
 
@@ -461,3 +420,48 @@ class Syntax_Analyzer():
             return errors
         else:
             return None
+        
+        
+    def check_compound_condt(self, rule_syntax, actual_syntax):
+        condtl_stmt =  self.extract_parameters(actual_syntax)
+        # print(f"condtl_stmt: {condtl_stmt}")
+
+        condtl_list = []
+        current_cond = []
+        
+        for idx, token in enumerate(condtl_stmt):
+            if token not in ["and_kw", "or_kw", "r_paren", "l_paren", "and_op", "or_op"]:
+                current_cond.append(token)
+            else:
+                if current_cond:
+                    condtl_list.append(current_cond)
+                condtl_list.append(token)
+                current_cond = []
+        
+        if current_cond:
+            condtl_list.append(current_cond)
+        current_cond = []
+
+        lparen_count = 0
+        for idx, cond in enumerate(condtl_list):
+            if cond == "l_paren" and (idx == 0 or condtl_list[idx-1] in ["and_kw", "or_kw", "and_op", "or_op"]):
+                idx_rparen = next((idx for idx, val in reversed(list(enumerate(condtl_list))) if val == "r_paren"), None)
+                if "r_paren" in condtl_list[idx + 1:] and (idx_rparen+1 == len(condtl_list) or condtl_list[idx+1] in ["and_kw", "or_kw", "and_op", "or_op"]):
+                    lparen_count = 1
+                    rule_syntax.append(cond)
+                    continue
+            elif cond == "r_paren" and lparen_count == 1 and  (idx+1 == len(condtl_list) or condtl_list[idx+1] in ["and_kw", "or_kw", "and_op", "or_op"]):
+                lparen_count = 0
+                rule_syntax.append(cond)
+                continue
+            elif cond in ["and_kw", "or_kw", "and_op", "or_op"]:
+                rule_syntax.append(cond)
+            else:
+                condition = ''.join(f"<{token}>" for token in cond)
+                if condition in LOGICAL_STMT or condition in RELATIONAL_STMT or condition == "<identifier>" or condition == "<bool_lit>":
+                    rule_syntax.extend(condition[1:-1].split('><'))
+                else:
+                    break
+        rule_syntax.extend(['r_paren', 'colon_delim'])  
+        
+        return rule_syntax

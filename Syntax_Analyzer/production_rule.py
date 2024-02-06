@@ -140,15 +140,18 @@ LOGICAL_STMT = [
     "<not_kw> <identifier>"
 ]
 LOGICAL_STMT = [stmt.replace(" ", "") for stmt in LOGICAL_STMT]
+
 ########################################
 # CONDITIONAL STATEMENTS
 ########################################
-CONDT_STMT = [
-    "<if_kw> <l_paren> <[CONDITION]> <r_paren> <colon_delim>",
-    "<elif_kw> <l_paren> <[CONDITION]> <r_paren> <colon_delim>",
+IF_STMT = [
+    "<if_kw> <l_paren> <identifier> <r_paren> <colon_delim>",
+    "<elif_kw> <l_paren> <identifier> <r_paren> <colon_delim>",
+    "<if_kw> <l_paren> <lit> <r_paren> <colon_delim>",
+    "<elif_kw> <l_paren> <lit> <r_paren> <colon_delim>",
     "<else_kw> <colon_delim>"
-]
-CONDT_STMT = [stmt.replace(" ", "") for stmt in CONDT_STMT]
+
+IF_STMT = [stmt.replace(" ", "") for stmt in IF_STMT]
 
 ########################################
 # LOOP STATEMENTS
@@ -204,6 +207,15 @@ ASS_STMT = [stmt.replace(" ", "") for stmt in ASS_STMT]
 
 
 ########################################
+# CONDITIONAL STATEMENTS
+########################################
+WHILE_STMT = [
+    "<while_kw> <l_paren> <identifier> <r_paren> <colon_delim>",
+    "<while_kw> <l_paren> <lit> <r_paren> <colon_delim>"
+]
+WHILE_STMT = [stmt.replace(" ", "") for stmt in WHILE_STMT]
+
+########################################
 # PRODUCTION RULE
 ########################################
 PRODUCTION_RULE = {
@@ -213,7 +225,8 @@ PRODUCTION_RULE = {
     "Import Statement": IMP_STMT,
     "Function Statement": FNC_STMT,
     "Comment Statement": COMMENT_STMT,
-    "If Statement": CONDT_STMT,
+    "If Statement": IF_STMT,
+    "While Statement": WHILE_STMT
     "Loop Statement":LOOP_STMT,
     "Assignment Statement": ASS_STMT
 }
