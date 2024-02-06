@@ -256,6 +256,8 @@ def classify_lexeme(lexeme, is_partof_str=None):
         return 'float_lit'
     elif lexeme.isdigit() and not lexeme.startswith('0') or lexeme == '0':
         return 'int_lit'
+    elif lexeme.lower() in ("true", "false"):
+        return 'bool_lit'
     elif is_valid_identifier(lexeme):
         return 'identifier'
     elif lexeme.startswith("#"):
