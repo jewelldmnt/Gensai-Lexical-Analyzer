@@ -134,14 +134,19 @@ RELATIONAL_STMT = [stmt.replace(" ", "") for stmt in RELATIONAL_STMT]
 LOGICAL_STMT = [
     "<identifier> <and_op> <identifier>",
     "<identifier> <or_op> <identifier>",
-    "<not_op> <identifier>"
+    "<identifier> <and_kw> <identifier>",
+    "<identifier> <or_kw> <identifier>",
+    "<not_op> <identifier>",
+    "<not_kw> <identifier>"
 ]
 LOGICAL_STMT = [stmt.replace(" ", "") for stmt in LOGICAL_STMT]
 ########################################
 # CONDITIONAL STATEMENTS
 ########################################
 CONDT_STMT = [
-    "<if_kw> <l_paren> <[CONDITION]> <r_paren> <colon_delim>"
+    "<if_kw> <l_paren> <[CONDITION]> <r_paren> <colon_delim>",
+    "<elif_kw> <l_paren> <[CONDITION]> <r_paren> <colon_delim>",
+    "<else_kw> <colon_delim>"
 ]
 CONDT_STMT = [stmt.replace(" ", "") for stmt in CONDT_STMT]
 

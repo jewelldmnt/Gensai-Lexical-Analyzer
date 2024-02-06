@@ -15,6 +15,8 @@ class Syntax_Analyzer():
         self.syntax_errors = None
         self.all_syntax_error = {}
         self.in_loop = False
+        self.is_if_present = False
+        self.currect_line_num = ""
     
     
     def parse(self):
@@ -42,9 +44,12 @@ class Syntax_Analyzer():
         Returns:
             all_syntax_errors (dict): A dictionary containing syntax errors mapped to their respective line numbers.
         """
+        # print(self.lex_analysis)
         for line_num, token_list in lex_analysis.items():
             invalid_indent = False
             syntax_error = []
+            self.currect_line_num = line_num
+            
             # Extract token elements from the token list and store in syntax list
             syntax = [item[1] for item in token_list]
             syntax = [item for item in syntax if item != '\\t']
@@ -157,7 +162,21 @@ class Syntax_Analyzer():
             actual_syntax = self.converter(actual_syntax)
         elif actual_syntax[0] == "comment":
             rule_name = "Comment Statement"
-        elif actual_syntax[0] == "if_kw":
+        elif actual_syntax[0] in ["if_kw", "elif_kw", "else_kw"]:
+            if actual_syntax[0] == "if_kw":
+                self.is_if_present = True
+            elif actual_syntax[0] in ('elif_kw', 'else_kw') and not self.is_if_present:
+                return None, None, actual_syntax, 0   
+            
+            ln = list(self.lex_analysis.keys())
+            idx = ln.index(self.currect_line_num) if self.currect_line_num in ln else -1  # Find the index or set to -1 if not found
+            ln = ln[idx+1:]
+            
+            is_else_kw_present = any('else_kw' in [t[1] for t in self.lex_analysis[line] if t] for line in ln)
+
+            if actual_syntax[0] == "else_kw" or (actual_syntax[0] == "elif_kw" and not is_else_kw_present):  
+                self.is_if_present = False
+
             rule_name = "If Statement"
             actual_syntax = self.converter(actual_syntax)
         elif ('skip_kw' in actual_syntax or 'stop_kw' in actual_syntax) and self.in_loop == True:
@@ -174,6 +193,8 @@ class Syntax_Analyzer():
             if len(rule_syntax) < len(actual_syntax) and rule_syntax[0] == actual_syntax[0]:
                  # Zipping the compound elements
                 rule_syntax = self.generate_compound_prod_rules(rule_name, rule_syntax, actual_syntax)
+
+            # print(f'Actual Syntax: {actual_syntax}\n Rule syntax: {rule_syntax}')
 
             zipped_tokens = zip(actual_syntax, rule_syntax)
             # Calculate accuracy as the ratio of correctly matched elements
@@ -254,14 +275,29 @@ class Syntax_Analyzer():
             
         if rule_name == 'If Statement':
             rule_syntax = rule_syntax[:2] # <if_kw> <l_paren>
+            print(f'{actual_syntax[-2]} {actual_syntax[-1]}')
+            if f'{actual_syntax[0]} {actual_syntax[1]}' not in ["if_kw l_paren", "elif_kw l_paren"] or f'{actual_syntax[-2]} {actual_syntax[-1]}' != "r_paren colon_delim":
+                if f'{actual_syntax[0]} {actual_syntax[1]}' not in ["if_kw l_paren", "elif_kw l_paren"] and f'{actual_syntax[-2]} {actual_syntax[-1]}' != "r_paren colon_delim":
+                    rule_syntax = [actual_syntax[0], 'l_paren'] + actual_syntax[1:-2]
+                    rule_syntax.extend('r_paren', 'colon_delim')
+                    return rule_syntax
+                elif f'{actual_syntax[0]} {actual_syntax[1]}' not in ["if_kw l_paren", "elif_kw l_paren"] and f'{actual_syntax[-2]} {actual_syntax[-1]}' == "r_paren colon_delim":
+                    rule_syntax = [actual_syntax[0], 'l_paren'] + actual_syntax[1:]
+                    return rule_syntax
+                else:
+                    rule_syntax = [actual_syntax[0:-2]]
+                    rule_syntax.extend(['r_paren', 'colon_delim'])
+                    return rule_syntax
+                
             
             condtl_stmt =  self.extract_parameters(actual_syntax)
+            # print(f"condtl_stmt: {condtl_stmt}")
 
             condtl_list = []
             current_cond = []
             
             for idx, token in enumerate(condtl_stmt):
-                if token not in ["and_kw", "or_kw", "r_paren", "l_paren"]:
+                if token not in ["and_kw", "or_kw", "r_paren", "l_paren", "and_op", "or_op"]:
                     current_cond.append(token)
                 else:
                     if current_cond:
@@ -275,17 +311,17 @@ class Syntax_Analyzer():
 
             lparen_count = 0
             for idx, cond in enumerate(condtl_list):
-                if cond == "l_paren" and (idx == 0 or condtl_list[idx-1] in ("and_kw", "or_kw")):
+                if cond == "l_paren" and (idx == 0 or condtl_list[idx-1] in ["and_kw", "or_kw", "and_op", "or_op"]):
                     idx_rparen = next((idx for idx, val in reversed(list(enumerate(condtl_list))) if val == "r_paren"), None)
-                    if "r_paren" in condtl_list[idx + 1:] and (idx_rparen+1 == len(condtl_list) or condtl_list[idx+1] in ("and_kw", "or_kw")):
+                    if "r_paren" in condtl_list[idx + 1:] and (idx_rparen+1 == len(condtl_list) or condtl_list[idx+1] in ["and_kw", "or_kw", "and_op", "or_op"]):
                         lparen_count = 1
                         rule_syntax.append(cond)
                         continue
-                elif cond == "r_paren" and lparen_count == 1 and  (idx+1 == len(condtl_list) or condtl_list[idx+1] in ("and_kw", "or_kw")):
+                elif cond == "r_paren" and lparen_count == 1 and  (idx+1 == len(condtl_list) or condtl_list[idx+1] in ["and_kw", "or_kw", "and_op", "or_op"]):
                     lparen_count = 0
                     rule_syntax.append(cond)
                     continue
-                elif cond in ("and_kw", "or_kw"):
+                elif cond in ["and_kw", "or_kw", "and_op", "or_op"]:
                     rule_syntax.append(cond)
                 else:
                     condition = ''.join(f"<{token}>" for token in cond)
@@ -320,22 +356,11 @@ class Syntax_Analyzer():
         Returns:
         parameters (list) or None: The list of tokens representing the extracted parameters or None if no match is found.
         """
-        actual_syntax = ' '.join(actual_syntax)
-        
-        # Define the pattern to match the desired syntax
-        pattern = r"l_paren (.+? r_paren)"
+        start_index = actual_syntax.index('l_paren') + 1
+        end_index = len(actual_syntax) - actual_syntax[::-1].index('r_paren') - 1
 
-        # Use regular expression to find matches
-        matches = re.findall(pattern, actual_syntax)
-
-        # Extract the parameters if matches are found
-        if matches:
-            # Get the last match (most inner content between l_paren and r_paren)
-            inner_content = matches[-1]
-            parameters = inner_content.split()
-            return parameters
-        else:
-            return None
+        result = actual_syntax[start_index:end_index]
+        return result
     
     
     
@@ -353,7 +378,7 @@ class Syntax_Analyzer():
         """
         converted_syntax = ['dt' if token in DATA_TYPES else token for token in actual_syntax]
         converted_syntax = ['lit' if token.endswith("_lit") else token for token in converted_syntax]
-        converted_syntax = ['op' if token.endswith("_op") and token not in ("and_op", "or_op") else token for token in converted_syntax]
+        converted_syntax = ['op' if token.endswith("_op") and token not in ["and_op", "or_op", "not_op"] else token for token in converted_syntax]
 
         return converted_syntax
 
