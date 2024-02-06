@@ -2,6 +2,7 @@ from Lexical_Analyzer.lexical_analyzer import tokenizer
 from Syntax_Analyzer.production_rule import *
 from copy import copy
 from itertools import zip_longest, groupby
+from Syntax_Analyzer.error_rule import UNEXPECTED_ERRORS, EXPECTED_ERRORS
 import re
 
 
@@ -58,9 +59,17 @@ class Syntax_Analyzer():
             elif accuracy > 0.5:
                 syntax_error.append((code, f'Invalid {prod_rule_name}', self.describe_error(actual_syntax, rule_syntax)))
             
-            else: # General Syntax Error
-                code = self.get_code(line_num) 
-                syntax_error.append((code, f'Invalid Syntax', f'kase mama mo blue'))
+            else: # Possible General Syntax Error
+                specific_errors = self.general_error_handler(actual_syntax)
+                code = self.get_code(line_num)
+                # If the syntax in that line has a specific error base on the error rules, append the specific description
+                if specific_errors:
+                    for error in specific_errors:
+                         # Get the tokens that made the specific error (example: token token token !!!error_token error_token!!! token token)
+                        syntax_error.append((code, f'Unexpected Token', error))
+                # Else append, general description
+                else:
+                    syntax_error.append((code, f'Invalid Syntax', f'kase mama mo blue'))
 
             self.all_syntax_error.update({line_num: syntax_error})
         
@@ -217,7 +226,8 @@ class Syntax_Analyzer():
     
     def converter(self, syntax):
         """
-        Converts the specific data types into 'dt' for bnf purposes in production rules
+        Converts the specific data types into 'dt' for bnf purposes in production rules.
+        While checking first
 
         Parameters:
             syntax (list): List of actual syntax where certain tokens will be converted.
@@ -244,3 +254,66 @@ class Syntax_Analyzer():
         with open(self.file_path, 'r') as file:
             lines = file.readlines()
             return lines[line_number - 1].strip()
+        
+    def general_error_handler(self, actual_syntax):
+        """
+        Handles the general error. Finds the exact error using a dictionary to map
+        the specific syntactical errors.
+
+        Parameters:
+            actual_syntax (list of tokens): list of tokens of the actual syntax that will be checked
+
+        Return:
+            list_of_errors (list of strings): list containing the error messages
+        """
+
+        list_of_errors = []  # List of errors if there are any
+
+        # Batch processing in chunks of 3 tokens
+        for i in range(2, len(actual_syntax)):
+            chunk = actual_syntax[i - 2:i]
+            list_of_returned_errors = self.in_error(chunk, actual_syntax[i - 3:i])
+            
+            if list_of_returned_errors:
+                list_of_errors.extend(list_of_returned_errors)  
+
+        return list_of_errors if list_of_errors else None
+    
+    def in_error(self, two_tokens, three_tokens=None):
+        """
+        Checks the dictionary and list in error_rule.py and returns a corresponding error message
+
+        Parameters:
+            two_tokens (list of tokens): list of tokens that are a size of 2 that is used for finding expected errors
+            three_tokens (list of tokens or None): list of tokens that are a size of 3 that is used for finding unexpected errors
+
+        Return:
+            errors (list of strings): list containing the error messages
+        """
+        # Initialize variables and format the lists into strings
+        errors = []
+        two_bit_token = ' '.join(two_tokens)
+
+        # Normalize the token using regular expression
+        modified_token = re.sub(r'(\w+)_dt (\w+)', lambda match: f"dt {'error' if match.group(2) != 'colon_delim' else 'colon_delim'}", two_bit_token)
+        modified_token = re.sub(r'(\w+)_dt (\w+)|out_kw (\w+)', lambda match: f"out_kw {'error' if match.group(2) and match.group(2) != 'colon_delim' else 'colon_delim' if match.group(3) == 'colon_delim' else 'error'}", modified_token)
+
+        if three_tokens is not None and len(three_tokens) >= 2:
+            temp = three_tokens[1]
+            three_tokens[1] = 'error'
+            three_bit_token = ' '.join(three_tokens)
+        else:
+            three_bit_token = None
+
+        # Append to the error list the syntactic error
+        if three_bit_token in UNEXPECTED_ERRORS and len(three_tokens) == 3:
+            errors.append("Got an unexpected {} after {}".format(temp, three_tokens[0]))
+        
+        if modified_token in EXPECTED_ERRORS:
+            expected_token = EXPECTED_ERRORS[modified_token]
+            errors.append("Expected a {} but encountered {}".format(expected_token, two_tokens[1]))
+        
+        if errors:
+            return errors
+        else:
+            return None
