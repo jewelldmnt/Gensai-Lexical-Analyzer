@@ -16,5 +16,6 @@ UNEXPECTED_ERRORS = [error.replace(" ", " ") for error in unexpected_errors]
 
 EXPECTED_ERRORS = {
     'dt error':'colon_delim',
-    'out_kw error':'colon_delim'
+    'key error':'colon_delim',
+    'colon_delim error':'identifier or literal',
 }
