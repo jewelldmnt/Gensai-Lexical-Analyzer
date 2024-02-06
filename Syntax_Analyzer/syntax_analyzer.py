@@ -43,7 +43,7 @@ class Syntax_Analyzer():
         Returns:
             all_syntax_errors (dict): A dictionary containing syntax errors mapped to their respective line numbers.
         """
-        print(self.lex_analysis)
+        # print(self.lex_analysis)
         for line_num, token_list in lex_analysis.items():
             syntax_error = []
             self.currect_line_num = line_num
@@ -134,7 +134,12 @@ class Syntax_Analyzer():
             elif actual_syntax[0] in ('elif_kw', 'else_kw') and not self.is_if_present:
                 return None, None, actual_syntax, 0   
             
-            is_else_kw_present = any('else_kw' in [t[1] for t in self.lex_analysis[line]] for line in range(self.currect_line_num, len(self.lex_analysis) + 1))
+            ln = list(self.lex_analysis.keys())
+            idx = ln.index(self.currect_line_num) if self.currect_line_num in ln else -1  # Find the index or set to -1 if not found
+            ln = ln[idx+1:]
+            
+            is_else_kw_present = any('else_kw' in [t[1] for t in self.lex_analysis[line] if t] for line in ln)
+
             if actual_syntax[0] == "else_kw" or (actual_syntax[0] == "elif_kw" and not is_else_kw_present):  
                 self.is_if_present = False
 
@@ -151,7 +156,7 @@ class Syntax_Analyzer():
                  # Zipping the compound elements
                 rule_syntax = self.generate_compound_prod_rules(rule_name, rule_syntax, actual_syntax)
 
-            print(f'Actual Syntax: {actual_syntax}\n Rule syntax: {rule_syntax}')
+            # print(f'Actual Syntax: {actual_syntax}\n Rule syntax: {rule_syntax}')
             zipped_tokens = zip(actual_syntax, rule_syntax)
             # Calculate accuracy as the ratio of correctly matched elements
             accuracy = sum(a == b for a, b in zipped_tokens) / max(len(actual_syntax), len(rule_syntax))
@@ -212,8 +217,23 @@ class Syntax_Analyzer():
             
         if rule_name == 'If Statement':
             rule_syntax = rule_syntax[:2] # <if_kw> <l_paren>
+            print(f'{actual_syntax[-2]} {actual_syntax[-1]}')
+            if f'{actual_syntax[0]} {actual_syntax[1]}' not in ["if_kw l_paren", "elif_kw l_paren"] or f'{actual_syntax[-2]} {actual_syntax[-1]}' != "r_paren colon_delim":
+                if f'{actual_syntax[0]} {actual_syntax[1]}' not in ["if_kw l_paren", "elif_kw l_paren"] and f'{actual_syntax[-2]} {actual_syntax[-1]}' != "r_paren colon_delim":
+                    rule_syntax = [actual_syntax[0], 'l_paren'] + actual_syntax[1:-2]
+                    rule_syntax.extend('r_paren', 'colon_delim')
+                    return rule_syntax
+                elif f'{actual_syntax[0]} {actual_syntax[1]}' not in ["if_kw l_paren", "elif_kw l_paren"] and f'{actual_syntax[-2]} {actual_syntax[-1]}' == "r_paren colon_delim":
+                    rule_syntax = [actual_syntax[0], 'l_paren'] + actual_syntax[1:]
+                    return rule_syntax
+                else:
+                    rule_syntax = [actual_syntax[0:-2]]
+                    rule_syntax.extend(['r_paren', 'colon_delim'])
+                    return rule_syntax
+                
             
             condtl_stmt =  self.extract_parameters(actual_syntax)
+            # print(f"condtl_stmt: {condtl_stmt}")
 
             condtl_list = []
             current_cond = []
@@ -267,22 +287,11 @@ class Syntax_Analyzer():
         Returns:
         parameters (list) or None: The list of tokens representing the extracted parameters or None if no match is found.
         """
-        actual_syntax = ' '.join(actual_syntax)
-        
-        # Define the pattern to match the desired syntax
-        pattern = r"l_paren (.+? r_paren)"
+        start_index = actual_syntax.index('l_paren') + 1
+        end_index = len(actual_syntax) - actual_syntax[::-1].index('r_paren') - 1
 
-        # Use regular expression to find matches
-        matches = re.findall(pattern, actual_syntax)
-
-        # Extract the parameters if matches are found
-        if matches:
-            # Get the last match (most inner content between l_paren and r_paren)
-            inner_content = matches[-1]
-            parameters = inner_content.split()
-            return parameters
-        else:
-            return None
+        result = actual_syntax[start_index:end_index]
+        return result
     
     
     
