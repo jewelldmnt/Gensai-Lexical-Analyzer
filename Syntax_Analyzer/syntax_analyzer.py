@@ -14,6 +14,7 @@ class Syntax_Analyzer():
         self.lex_analysis = None
         self.syntax_errors = None
         self.all_syntax_error = {}
+        self.in_loop = False
         self.is_if_present = False
         self.currect_line_num = ""
     
@@ -45,14 +46,36 @@ class Syntax_Analyzer():
         """
         # print(self.lex_analysis)
         for line_num, token_list in lex_analysis.items():
+            invalid_indent = False
             syntax_error = []
             self.currect_line_num = line_num
             
             # Extract token elements from the token list and store in syntax list
             syntax = [item[1] for item in token_list]
+            syntax = [item for item in syntax if item != '\\t']
             code = self.get_code(line_num)
+
+            # Check for invalid spaces then break if found and continue to the next iteration
+            for item in token_list:
+                # Check if the current item starts with '\s', '\s\s', or '\s\s\s'
+                if item[0] == 'invalid_indent':
+                    invalid_indent = True
+                    syntax_error.append((code, f'Invalid Indent number', f'Expected 4 spaces or 1 tab'))
+                    self.all_syntax_error.update({line_num: syntax_error})
+                    break
+                else:
+                    break
+            if invalid_indent == True:
+                continue
+
             # Call function that calculates the accuracy of the syntax
             prod_rule_name, rule_syntax, actual_syntax, accuracy= self.calculate_accuracy(syntax)
+
+            # If outside loop
+            if self.in_loop == False and prod_rule_name == 'None' and rule_syntax == None:
+                syntax_error.append((code, 'Invalid Loop Control', 'Must be inside loop statement'))
+                self.all_syntax_error.update({line_num: syntax_error})
+                continue
             
             if 'invalid' in syntax:
                 syntax_error.append((code, 'Invalid Token', 'This is not recognized by the language'))
@@ -78,7 +101,6 @@ class Syntax_Analyzer():
             self.all_syntax_error.update({line_num: syntax_error})
         
         return copy(self.all_syntax_error)
-        
         
     def describe_error(self, actual_syntax, rule_syntax):
         """
@@ -117,15 +139,27 @@ class Syntax_Analyzer():
         max_accuracy = 0
         matching_rule = None
         rule_name = ""
+        expected_syntax = ""
         
         if actual_syntax[0].endswith("_dt"):
             rule_name = "Declaration Statement"
         elif actual_syntax[0] == "out_kw":
             rule_name = "Output Statement"
+            actual_syntax = self.normalize(actual_syntax)
+        elif actual_syntax[0] == "in_kw":
+            rule_name = "Input Statement"
+            actual_syntax = self.normalize(actual_syntax)
         elif actual_syntax[0] in ("import_kw", "from_kw"):
             rule_name = "Import Statement"
+        elif actual_syntax[0] in ("while_kw","for_kw","repeat_kw"):
+            self.in_loop = True
+            actual_syntax = self.normalize(actual_syntax)
+            rule_name = "Loop Statement"
         elif actual_syntax[0] == "func_kw":
             rule_name = "Function Statement"
+        elif actual_syntax[0] == "identifier":
+            rule_name = "Assignment Statement"
+            actual_syntax = self.converter(actual_syntax)
         elif actual_syntax[0] == "comment":
             rule_name = "Comment Statement"
         elif actual_syntax[0] in ["if_kw", "elif_kw", "else_kw"]:
@@ -149,9 +183,16 @@ class Syntax_Analyzer():
         elif actual_syntax[0] == "while_kw":
             rule_name = "While Statement"
             actual_syntax = self.converter(actual_syntax)
+
+        elif ('skip_kw' in actual_syntax or 'stop_kw' in actual_syntax) and self.in_loop == True:
+            rule_name = "Loop Statement"
+            self.in_loop = False
+            
+        elif ('skip_kw' in actual_syntax or 'stop_kw' in actual_syntax) and self.in_loop == False:
+            return 'None', None, actual_syntax, 0
+
         else:
             return None, None, actual_syntax, 0    
-        
         
         for rule in PRODUCTION_RULE[rule_name]:
             rule_syntax = [element.strip('<>') for element in rule.split('><')]
@@ -161,6 +202,7 @@ class Syntax_Analyzer():
                 rule_syntax = self.generate_compound_prod_rules(rule_name, rule_syntax, actual_syntax)
 
             # print(f'Actual Syntax: {actual_syntax}\n Rule syntax: {rule_syntax}')
+
             zipped_tokens = zip(actual_syntax, rule_syntax)
             # Calculate accuracy as the ratio of correctly matched elements
             accuracy = sum(a == b for a, b in zipped_tokens) / max(len(actual_syntax), len(rule_syntax))
@@ -172,6 +214,25 @@ class Syntax_Analyzer():
                 expected_syntax = rule_syntax
 
         return matching_rule, expected_syntax, actual_syntax, max_accuracy
+    
+    def normalize(self, actual_syntax):
+        input_string = ' '.join(actual_syntax)
+
+        if 'd_quo' in input_string:
+            quo_tag = 'd_quo'
+        elif 's_quo' in input_string:
+            quo_tag = 's_quo'
+        else:
+            quo_tag = None
+
+        # Replace the substrings matching the pattern with 'str_lit'
+        input_string = re.sub(r'(?:d_quo|s_quo).+?l_curly', f'{quo_tag} str_lit l_curly', input_string, flags=re.DOTALL)
+        input_string = re.sub(r'r_curly\s+(.*?)\s+(d_quo|s_quo)', f'r_curly str_lit {quo_tag}', input_string, flags=re.DOTALL)
+        input_string = re.sub(r'\b\w+_func\b', 'func', input_string)
+
+        # Split the output string back into a list
+        return input_string.split()
+
 
 
     def generate_compound_prod_rules(self, rule_name, rule_syntax, actual_syntax):
@@ -338,6 +399,7 @@ class Syntax_Analyzer():
         # Normalize the token using regular expression
         modified_token = re.sub(r'(\w+)_dt (\w+)', lambda match: f"dt {'error' if match.group(2) != 'colon_delim' else 'colon_delim'}", two_bit_token)
         modified_token = re.sub(r'(\w+)_dt (\w+)|out_kw (\w+)', lambda match: f"out_kw {'error' if match.group(2) and match.group(2) != 'colon_delim' else 'colon_delim' if match.group(3) == 'colon_delim' else 'error'}", modified_token)
+        modified_token = re.sub(r'colon_delim (\w+)_kw|colon_delim (\w+)_met|colon_delim (\w+)_func', lambda match: f"colon_delim {'key' if match.group(2) and match.group(2) != 'colon_delim' else 'colon_delim' if match.group(3) == 'colon_delim' else 'error'}", modified_token)
 
         if three_tokens is not None and len(three_tokens) >= 2:
             temp = three_tokens[1]
@@ -352,7 +414,7 @@ class Syntax_Analyzer():
         
         if modified_token in EXPECTED_ERRORS:
             expected_token = EXPECTED_ERRORS[modified_token]
-            errors.append("Expected a {} but encountered {}".format(expected_token, two_tokens[1]))
+            errors.append("Expected {} but encountered {}".format(expected_token, two_tokens[1]))
         
         if errors:
             return errors

@@ -1,3 +1,20 @@
+out mama mo blue
+out; "x"
+out: x
+out: "x
+out: True
+out: "x"
+out: 'x'
+out: 'x"
+out: "x'
+out: "x y"
+out: out:
 out: "Velocity: {velocity} is not speed."
+out: "Velocity: {velocity} is not speed. {velocity}"
+out: "{velocity} Velocity: is not speed. {velocity}"
 out: "Velocity: {"
 out: "Velocity: 'is not speed' but {}"
+out: x
+out: 1
+out: 2.1
+out: True

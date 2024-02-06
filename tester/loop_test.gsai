@@ -1,0 +1,10 @@
+while f >= x:
+while f >= 2:
+while f != 2.4:
+while f > x and f >= x:
+while f > x or f >= x:
+while f + x == y:
+while f + x == y or f >= x:
+while False:
+    stop
+stop

@@ -1,18 +1,14 @@
 DATA_TYPES = [
     'int_dt', 'float_dt', 'str_dt', 'char_dt', 'bool_dt'
 ]
-
-########################################
-# ASSIGNMENT STATEMENTS
-########################################
-ASS = [
-    "<identifier> <ass> <int_lit>",
-    "<identifier> <ass> <str_lit>",
-    "<identifier> <ass> <float_lit>",
-    "<identifier> <ass> <bool_lit>",
-    "<identifier> <ass> <char_lit>"
-    ]
-ASS = [stmt.replace(" ", "") for stmt in ASS]
+COMPARISON_OP = [
+    'eq_op',
+    'neq_op',
+    'gt_op',
+    'lt_op',
+    'gte_op',
+    'lte_op'
+]
 
 ########################################
 # DECLARATION STATEMENTS
@@ -43,6 +39,26 @@ DECLARATION_STMT = [
 DECLARATION_STMT = [stmt.replace(" ", "") for stmt in DECLARATION_STMT]
 
 ########################################
+# INPUT STATEMENTS
+########################################
+IN_STMT = [
+    "<in_kw> <l_paren> <r_paren>",
+    "<in_kw> <l_paren> <s_quo> <str_lit> <s_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <str_lit> <d_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <char_lit> <d_quo> <r_paren>",
+    "<in_kw> <l_paren> <s_quo> <char_lit> <s_quo> <r_paren>",
+    "<in_kw> <l_paren> <str_lit> <r_paren>",
+    "<in_kw> <l_paren> <identifier> <r_paren>",
+    "<in_kw> <l_paren> <s_quo> <identifier> <s_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <identifier> <d_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <str_lit> <l_curly> <identifier> <r_curly> <str_lit> <d_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <str_lit> <l_curly> <identifier> <r_curly> <d_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <l_curly> <identifier> <r_curly> <str_lit> <l_curly> <identifier> <r_curly> <str_lit> <d_quo> <r_paren>",
+    "<in_kw> <l_paren> <d_quo> <l_curly> <identifier> <r_curly> <str_lit> <l_curly> <identifier> <r_curly> <d_quo> <r_paren>",
+]
+IN_STMT = [stmt.replace(" ", "") for stmt in IN_STMT]
+
+########################################
 # OUTPUT STATEMENTS
 ########################################
 OUT_STMT = [
@@ -51,7 +67,16 @@ OUT_STMT = [
     "<out_kw> <colon_delim> <float_lit>",
     "<out_kw> <colon_delim> <identifier>",
     "<out_kw> <colon_delim> <bool_lit>",
-    "<out_kw> <colon_delim> <str_lit>"
+    "<out_kw> <colon_delim> <d_quo> <str_lit> <d_quo>",
+    "<out_kw> <colon_delim> <s_quo> <str_lit> <s_quo>",
+    "<out_kw> <colon_delim> <d_quo> <char_lit> <d_quo>",
+    "<out_kw> <colon_delim> <s_quo> <char_lit> <s_quo>",
+    "<out_kw> <colon_delim> <s_quo> <identifier> <s_quo>",
+    "<out_kw> <colon_delim> <d_quo> <identifier> <d_quo>",
+    "<out_kw> <colon_delim> <d_quo> <str_lit> <l_curly> <identifier> <r_curly> <str_lit> <d_quo>",
+    "<out_kw> <colon_delim> <d_quo> <str_lit> <l_curly> <identifier> <r_curly> <d_quo>",
+    "<out_kw> <colon_delim> <d_quo> <l_curly> <identifier> <r_curly> <str_lit> <l_curly> <identifier> <r_curly> <str_lit> <d_quo>",
+    "<out_kw> <colon_delim> <d_quo> <l_curly> <identifier> <r_curly> <str_lit> <l_curly> <identifier> <r_curly> <d_quo>",
 ]
 OUT_STMT = [stmt.replace(" ", "") for stmt in OUT_STMT]
 
@@ -103,6 +128,9 @@ RELATIONAL_STMT = [
 ]
 RELATIONAL_STMT = [stmt.replace(" ", "") for stmt in RELATIONAL_STMT]
 
+########################################
+# LOGICAL STATEMENTS
+########################################
 LOGICAL_STMT = [
     "<identifier> <and_op> <identifier>",
     "<identifier> <or_op> <identifier>",
@@ -113,14 +141,69 @@ LOGICAL_STMT = [
 ]
 LOGICAL_STMT = [stmt.replace(" ", "") for stmt in LOGICAL_STMT]
 
+########################################
+# CONDITIONAL STATEMENTS
+########################################
 IF_STMT = [
     "<if_kw> <l_paren> <identifier> <r_paren> <colon_delim>",
     "<elif_kw> <l_paren> <identifier> <r_paren> <colon_delim>",
     "<if_kw> <l_paren> <lit> <r_paren> <colon_delim>",
     "<elif_kw> <l_paren> <lit> <r_paren> <colon_delim>",
     "<else_kw> <colon_delim>"
-]
+
 IF_STMT = [stmt.replace(" ", "") for stmt in IF_STMT]
+
+########################################
+# LOOP STATEMENTS
+########################################
+LOOP_STMT = [
+    # repeat loops
+    "<repeat_kw> <int_lit> <colon_delim>",
+    "<repeat_kw> <identifier> <colon_delim>",
+    "<repeat_kw> <func> <l_paren> <r_paren> <colon_delim>",
+    "<repeat_kw> <func> <l_bracket> <int_lit> <r_bracket> <colon_delim>",
+    "<repeat_kw> <func> <l_bracket> <identifier> <r_bracket> <colon_delim>",
+    "<repeat_kw> <identifier> <l_paren> <r_paren> <colon_delim>",
+    # loop controls
+    "stop_kw",
+    "skip_kw",
+    # for loops
+    "<for_kw> <identifier> <in_kw> <identifier> <colon_delim>",
+    "<for_kw> <identifier> <in_kw> <identifier> <l_bracket> <int_lit> <r_bracket> <colon_delim>",
+    "<for_kw> <identifier> <in_kw> <identifier> <l_bracket> <r_bracket> <colon_delim>",
+    "<for_kw> <identifier> <in_kw> <identifier> <l_bracket> <identifier> <r_bracket> <colon_delim>",
+    "<for_kw> <identifier> <in_kw> <identifier> <l_paren> <identifier> <r_paren> <colon_delim>",
+    "<for_kw> <identifier> <in_kw> <identifier> <l_paren> <r_paren> <colon_delim>",
+    "<for_kw> <identifier> <within_kw> <identifier> <colon_delim>",
+    "<for_kw> <identifier> <within_kw> <identifier> <l_bracket> <int_lit> <r_bracket> <colon_delim>",
+    "<for_kw> <identifier> <within_kw> <identifier> <l_bracket> <r_bracket> <colon_delim>",
+    "<for_kw> <identifier> <within_kw> <identifier> <l_bracket> <identifier> <r_bracket> <colon_delim>",
+    "<for_kw> <identifier> <within_kw> <identifier> <l_paren> <identifier> <r_paren> <colon_delim>",
+    "<for_kw> <identifier> <within_kw> <identifier> <l_paren> <r_paren> <colon_delim>",
+    # while loops
+    "<while_kw> <lit> <comp_op> <lit> <colon_delim>",
+    "<while_kw> <lit> <colon_delim>",
+    "<while_kw> <> <> <> <>",
+    "<> <> <> <> <>",
+]
+LOOP_STMT = [stmt.replace(" ", "") for stmt in LOOP_STMT]
+
+########################################
+# ASSIGNMENT STATEMENTS
+########################################
+ASS_STMT = [
+    '<identifier> <ass> <lit>',
+    '<identifier> <ass> <identifier>',
+    '<identifier> <ass> <s_quo> <lit> <s_quo>',
+    '<identifier> <ass> <d_quo> <lit> <d_quo>',
+    '<identifier> <ass> <identifier> <l_bracket> <r_bracket>',
+    '<identifier> <ass> <identifier> <l_bracket> <lit> <r_bracket>',
+    '<identifier> <ass> <identifier> <l_bracket> <identifier> <r_bracket>',
+    '<identifier> <ass> <identifier> <l_paren> <r_paren>',
+    '<identifier> <ass> <identifier> <l_paren> <identifier> <r_paren>',
+    '<while_kw> <identifier> <comp_op> <>'
+]
+ASS_STMT = [stmt.replace(" ", "") for stmt in ASS_STMT]
 
 
 ########################################
@@ -138,10 +221,13 @@ WHILE_STMT = [stmt.replace(" ", "") for stmt in WHILE_STMT]
 PRODUCTION_RULE = {
     "Declaration Statement": DECLARATION_STMT,
     "Output Statement": OUT_STMT,
+    "Input Statement": IN_STMT,
     "Import Statement": IMP_STMT,
     "Function Statement": FNC_STMT,
     "Comment Statement": COMMENT_STMT,
     "If Statement": IF_STMT,
     "While Statement": WHILE_STMT
+    "Loop Statement":LOOP_STMT,
+    "Assignment Statement": ASS_STMT
 }
 
