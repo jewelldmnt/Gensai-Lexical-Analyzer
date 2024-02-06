@@ -150,7 +150,7 @@ IF_STMT = [
     "<if_kw> <l_paren> <lit> <r_paren> <colon_delim>",
     "<elif_kw> <l_paren> <lit> <r_paren> <colon_delim>",
     "<else_kw> <colon_delim>"
-
+]
 IF_STMT = [stmt.replace(" ", "") for stmt in IF_STMT]
 
 ########################################
@@ -226,7 +226,7 @@ PRODUCTION_RULE = {
     "Function Statement": FNC_STMT,
     "Comment Statement": COMMENT_STMT,
     "If Statement": IF_STMT,
-    "While Statement": WHILE_STMT
+    "While Statement": WHILE_STMT,
     "Loop Statement":LOOP_STMT,
     "Assignment Statement": ASS_STMT
 }

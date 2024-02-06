@@ -1,0 +1,167 @@
+from sys import argv
+import pandas as pd
+
+func main():
+    # start
+    int: a = 1
+    float: velocity = cal_velocity(2, 3, 1)
+
+    if (velocity.isdigit()):
+        out: "Velocity: {velocity}"
+
+    int: n_elements = in("Enter the number of elements: ") 
+    int: arr[]
+
+    repeat n_elements:
+        int: element = in("Enter an element: ") 
+        arr.append(element)
+
+    out: arr
+
+w = 1
+x = 2.4
+j = 'string'
+k = "string"
+l = True
+m = mama_list[x]
+m = mama_list[2]
+n = function_ko_to()
+y = function_ko_to(x)
+z = function_ko_to(x, x)
+i = function_ko_to(x, x, string)
+
+from hatdog import cheese, mayo
+from hatdog import cheese
+import pandas as pd
+
+func (main(int: x):
+func main():
+func main(int: x, float: y):
+func main(int: x = 2, float: y = 2.4):
+func main(int: x, float: y, string x):
+func main(float: x, string: x, int: x, float: y, string: x):
+func main(int: x, float: y)
+    str x = "string"
+    str: x = "string'
+    int: a = x
+    float: velocity = cal_velocity(2, 3, 1)
+    float: velocity = 3.4
+    float: velocity = '34'
+
+    if velocity.isdigit():
+        out: "Velocity: {velocity} is not speed."
+        out: "Velocity: {"
+        out: "Velocity: 'is not speed' but {}"
+
+if((a == b) and (b >= 2.3 || !c)):
+    out: a
+elif (not isvalid):
+    out: b
+else:
+    out: c
+
+elif (a > b):
+    out: chonghEyFatcHoy
+
+if a == b:
+    out: as
+
+if digit.islower():
+
+func (main(int: x):
+func main():
+func main(int: x, float: y):
+func main(int: x = 2, float: y = 2.4):
+func main(int: x = 2, float: y = 2.4, string = 'text'):
+func main(float x, string x, int: x = 2, float: y = 2.4, string = 'text'):
+func main(int: x, float: y)
+out "Velocity: {velocity} is not speed."
+# unexpected
+func (main(int: x):
+func 2 main():
+    str x = "string"
+    str: x = "string'
+bool try x: True
+from hatdog import cheese, mayo
+from hatdog import cheese
+import pandas as pd
+in()
+in("x")
+in('x')
+in("try")
+in("mama mo blue")
+in("x")
+in(x)
+in("Velocity: {velocity} is not speed.")
+in("Velocity: {velocity} is not speed. {velocity}")
+in("{velocity} Velocity: is not speed. {velocity}")
+in("x)
+in('x)
+in('x")
+in("x')
+in(True)
+in("x y")
+in(in:)
+in("Velocity{")
+in("Velocity'is not speed' but {}")
+in(1)
+in(2.1)
+repeat mama_mo:
+repeat 2:
+repeat x:
+repeat cal_velocity():
+repeat cal_velocity[1]:
+repeat cal_velocity[X]:
+repeat cal_velocity[index]:
+    stop
+repeat "x":
+repeat 'x":
+    stop
+stop
+repeat ('x'):
+repeat 2.4:
+
+
+for x in mama_mo:
+for x in mama_mo[2]:
+for x in mama_mo[x]:
+for x in mama_mo[index]:
+    skip
+skip
+for x within mama_mo:
+for x within mama_mo[2]:
+for x within mama_mo[x]:
+for x in mama_mo():
+for x in mama_mo(variable):
+for x within mama_mo[index]:
+    skip
+skip
+for x in mama_mo
+for x in 2 mama_mo
+for x in 2.4
+for x in and
+for x in mama_mo[2:
+for x in "mama_mo":
+
+
+while (f >= x):
+while (f > x):
+while (f + x == x):
+while (f + x == x):
+while (f + x == x):
+while (False):
+    stop
+stop
+while (a and b):
+if ((a > 2) or (b == 3)):
+while (a > 2 or b == 3)
+while (a):
+while a:
+while (!a):
+while (True):
+
+
+while (f >= x):
+while (f > x):
+while (f + x == x):
+
