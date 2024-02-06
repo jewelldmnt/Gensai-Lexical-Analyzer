@@ -91,6 +91,32 @@ FNC_STMT = [stmt.replace(" ", "") for stmt in FNC_STMT]
 COMMENT_STMT = ["<comment>"]
 
 ########################################
+# CONDITIONAL STATEMENTS
+########################################
+RELATIONAL_STMT = [
+    "<identifier> <op> <lit>",
+    "<identifier> <l_paren> <op> <r_paren> <lit>",
+    "<identifier> <op> <identifier>",
+    "<identifier> <l_paren> <op> <r_paren> <identifier>",
+    "<lit> <op> <lit>",
+    "<lit> <l_paren> <op> <r_paren> <lit>"
+]
+RELATIONAL_STMT = [stmt.replace(" ", "") for stmt in RELATIONAL_STMT]
+
+LOGICAL_STMT = [
+    "<identifier> <and_op> <identifier>",
+    "<identifier> <or_op> <identifier>",
+    "<not_op> <identifier>"
+]
+LOGICAL_STMT = [stmt.replace(" ", "") for stmt in LOGICAL_STMT]
+
+CONDT_STMT = [
+    "<if_kw> <l_paren> <[CONDITION]> <r_paren> <colon_delim>"
+]
+CONDT_STMT = [stmt.replace(" ", "") for stmt in CONDT_STMT]
+
+
+########################################
 # PRODUCTION RULE
 ########################################
 PRODUCTION_RULE = {
@@ -98,6 +124,7 @@ PRODUCTION_RULE = {
     "Output Statement": OUT_STMT,
     "Import Statement": IMP_STMT,
     "Function Statement": FNC_STMT,
-    "Comment Statement": COMMENT_STMT
+    "Comment Statement": COMMENT_STMT,
+    "If Statement": CONDT_STMT
 }
 
