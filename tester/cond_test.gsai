@@ -1,0 +1,9 @@
+if(a == b and (b >= 2.3 || !c)):
+    out: a
+elif (not isvalid):
+    out: b
+else:
+    out: c
+
+elif (a > b):
+    out: chonghEyFatcHoy
