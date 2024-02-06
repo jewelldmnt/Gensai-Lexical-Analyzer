@@ -5,3 +5,8 @@ while (a):
 while a:
 while (!a):
 while (True):
+
+
+while (f >= x):
+while (f > x):
+while (f + x == x):

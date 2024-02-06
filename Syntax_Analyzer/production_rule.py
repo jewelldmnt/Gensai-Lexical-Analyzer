@@ -116,8 +116,8 @@ LOGICAL_STMT = [stmt.replace(" ", "") for stmt in LOGICAL_STMT]
 IF_STMT = [
     "<if_kw> <l_paren> <identifier> <r_paren> <colon_delim>",
     "<elif_kw> <l_paren> <identifier> <r_paren> <colon_delim>",
-    "<if_kw> <l_paren> <bool_lit> <r_paren> <colon_delim>",
-    "<elif_kw> <l_paren> <bool_lit> <r_paren> <colon_delim>",
+    "<if_kw> <l_paren> <lit> <r_paren> <colon_delim>",
+    "<elif_kw> <l_paren> <lit> <r_paren> <colon_delim>",
     "<else_kw> <colon_delim>"
 ]
 IF_STMT = [stmt.replace(" ", "") for stmt in IF_STMT]
@@ -128,7 +128,7 @@ IF_STMT = [stmt.replace(" ", "") for stmt in IF_STMT]
 ########################################
 WHILE_STMT = [
     "<while_kw> <l_paren> <identifier> <r_paren> <colon_delim>",
-    "<while_kw> <l_paren> <bool_lit> <r_paren> <colon_delim>"
+    "<while_kw> <l_paren> <lit> <r_paren> <colon_delim>"
 ]
 WHILE_STMT = [stmt.replace(" ", "") for stmt in WHILE_STMT]
 

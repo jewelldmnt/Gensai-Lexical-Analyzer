@@ -1,0 +1,46 @@
+repeat mama_mo:
+repeat 2:
+repeat x:
+repeat cal_velocity():
+repeat cal_velocity[1]:
+repeat cal_velocity[X]:
+repeat cal_velocity[index]:
+    stop
+repeat "x":
+repeat 'x":
+    stop
+stop
+repeat ('x'):
+repeat 2.4:
+
+
+for x in mama_mo:
+for x in mama_mo[2]:
+for x in mama_mo[x]:
+for x in mama_mo[index]:
+    skip
+skip
+for x within mama_mo:
+for x within mama_mo[2]:
+for x within mama_mo[x]:
+for x in mama_mo():
+for x in mama_mo(variable):
+for x within mama_mo[index]:
+    skip
+skip
+for x in mama_mo
+for x in 2 mama_mo
+for x in 2.4
+for x in and
+for x in mama_mo[2:
+for x in "mama_mo":
+
+
+while (f >= x):
+while (f > x):
+while (f + x == x):
+while (f + x == x):
+while (f + x == x):
+while (False):
+    stop
+stop

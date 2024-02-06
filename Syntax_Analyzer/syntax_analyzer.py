@@ -148,6 +148,7 @@ class Syntax_Analyzer():
             
         elif actual_syntax[0] == "while_kw":
             rule_name = "While Statement"
+            actual_syntax = self.converter(actual_syntax)
         else:
             return None, None, actual_syntax, 0    
         
