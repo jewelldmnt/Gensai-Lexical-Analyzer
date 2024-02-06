@@ -1,10 +1,9 @@
 from Lexical_Analyzer.lexical_analyzer import tokenizer
 from Syntax_Analyzer.production_rule import *
 from copy import copy
-from itertools import zip_longest
+from itertools import zip_longest, groupby
 from Syntax_Analyzer.error_rule import UNEXPECTED_ERRORS, EXPECTED_ERRORS
 import re
-
 
 
 
@@ -123,7 +122,6 @@ class Syntax_Analyzer():
             rule_name = "Import Statement"
         elif actual_syntax[0] == "func_kw":
             rule_name = "Function Statement"
-            actual_syntax = self.converter(actual_syntax)
         elif actual_syntax[0] == "comment":
             rule_name = "Comment Statement"
         else:
@@ -135,10 +133,10 @@ class Syntax_Analyzer():
 
             if len(rule_syntax) < len(actual_syntax) and rule_syntax[0] == actual_syntax[0]:
                  # Zipping the compound elements
-                rule_syntax = self.compound_checker(rule_name, rule_syntax, actual_syntax)
+                rule_syntax = self.generate_compound_prod_rules(rule_name, rule_syntax, actual_syntax)
 
+            # print(f'Actual Syntax: {actual_syntax}\n Rule syntax: {rule_syntax}')
             zipped_tokens = zip(actual_syntax, rule_syntax)
-            
             # Calculate accuracy as the ratio of correctly matched elements
             accuracy = sum(a == b for a, b in zipped_tokens) / max(len(actual_syntax), len(rule_syntax))
 
@@ -151,39 +149,80 @@ class Syntax_Analyzer():
         return matching_rule, expected_syntax, actual_syntax, max_accuracy
 
 
-    
-    def compound_checker(self, rule_name, rule_syntax, actual_syntax):
+    def generate_compound_prod_rules(self, rule_name, rule_syntax, actual_syntax):
         """
-        Converts the specific data types into 'dt' for BNF purposes in production rules.
+        Generate compound production rules based on the given rule_name and actual_syntax.
 
         Parameters:
             rule_name (str): The name of the production rule.
-            rule_syntax (list): List representing the production rule syntax.
-            actual_syntax (list): List of actual syntax where certain tokens will be converted.
+            rule_syntax (list): The current list of tokens representing the base production rule.
+            actual_syntax (list): The list of tokens representing the actual syntax.
 
         Returns:
-            converted_syntax (list): List of converted syntax.
+            rule_syntax (list): The updated rule_syntax after applying the compound production rules.
         """
         excess_actual_syntax = len(actual_syntax) - len(rule_syntax)
+
         if rule_name == 'Import Statement':
-            while excess_actual_syntax > 0:
+           while excess_actual_syntax > 0:
                 rule_syntax.append('comma_delim')
                 rule_syntax.append('identifier')
                 excess_actual_syntax -= 2
-        
+
         elif rule_name == 'Function Statement':
-            # Rule Syntax without the r_paren and colon_delim
-            rule_syntax = rule_syntax[:-2]  
-            while excess_actual_syntax > 0:
-                rule_syntax.append('comma_delim')
-                rule_syntax.append('dt')
-                rule_syntax.append('colon_delim')
-                rule_syntax.append('identifier')
-                excess_actual_syntax -= 4
+            rule_syntax = rule_syntax[:3] # <func_kw> <identifier> <l_paren>
+            
+            # Extract the parameters from the actual_syntax
+            whole_parameter = self.extract_parameters(actual_syntax)
+            
+            # Group consecutive elements without 'comma_delim'
+            param_list = [list(g) for k, g in groupby(whole_parameter, lambda x: x == 'comma_delim') if not k]
+
+            for idx, param in enumerate(param_list):
+                # Build a parameter string with '<>' around each token
+                parameter = ''.join(f"<{token}>" for token in param)
+
+                if parameter in DECLARATION_STMT:
+                    # Add the parameter tokens to rule_syntax
+                    rule_syntax.extend(parameter[1:-1].split('><'))
+                    if idx < len(param_list) - 1:
+                        rule_syntax.extend(['comma_delim'])
+                else:
+                    # Stop processing if the parameter is not in DECLARATION_STMT
+                    break
+            
+            # Add closing tokens for function statement
             rule_syntax.extend(['r_paren', 'colon_delim'])
-        
+
         return rule_syntax
+
+
+    def extract_parameters(self, actual_syntax):
+        """
+        Extract parameters from the given actual_syntax.
+
+        Parameters:
+        - actual_syntax (list): The list of tokens representing the actual syntax.
+
+        Returns:
+        parameters (list) or None: The list of tokens representing the extracted parameters or None if no match is found.
+        """
+        actual_syntax = ' '.join(actual_syntax)
         
+        # Define the pattern to match the desired syntax
+        pattern = r"l_paren (.+?) r_paren"
+
+        # Use regular expression to find matches
+        matches = re.search(pattern, actual_syntax)
+
+        # Extract the parameters if matches are found
+        if matches:
+            parameters = matches.group(1).split()
+            return parameters
+        else:
+            return None
+    
+    
     
     def converter(self, syntax):
         """

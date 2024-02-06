@@ -70,8 +70,18 @@ IMP_STMT = [stmt.replace(" ", "") for stmt in IMP_STMT]
 # FUNCTION RULE
 ########################################
 FNC_STMT = [
-    "<func_kw> <identifier> <l_paren> <dt> <colon_delim> <identifier> <r_paren> <colon_delim>"
-    "<func_kw> <identifier> <l_paren> <r_paren> <colon_delim>"
+    "<func_kw> <identifier> <l_paren> <r_paren> <colon_delim>",
+    "<func_kw> <identifier> <l_paren> <int_dt> <colon_delim> <identifier> <r_paren> <colon_delim>",
+    "<func_kw> <identifier> <l_paren> <float_dt> <colon_delim> <identifier> <r_paren> <colon_delim>",
+    "<func_kw> <identifier> <l_paren> <str_dt> <colon_delim> <identifier> <r_paren> <colon_delim>",
+    "<func_kw> <identifier> <l_paren> <char_dt> <colon_delim> <identifier> <r_paren> <colon_delim>",
+    "<func_kw> <identifier> <l_paren> <bool_dt> <colon_delim> <identifier> <r_paren> <colon_delim>",
+    "func_kw> <identifier> <l_paren> <int_dt> <colon_delim> <identifier> <ass> <int_lit> <r_paren> <colon_delim>", 
+    "func_kw> <identifier> <l_paren> <float_dt> <colon_delim> <identifier> <ass> <float_lit> <r_paren> <colon_delim>",
+    "func_kw> <identifier> <l_paren> <str_dt> <colon_delim> <identifier> <ass> <s_quo> <str_lit> <s_quo> <r_paren> <colon_delim>",
+    "func_kw> <identifier> <l_paren> <str_dt> <colon_delim> <identifier> <ass> <d_quo> <str_lit> <d_quo> <r_paren> <colon_delim>",
+    "func_kw> <identifier> <l_paren> <char_dt> <colon_delim> <identifier> <ass> <char_lit> <r_paren> <colon_delim>",
+    "func_kw> <identifier> <l_paren> <bool_dt> <colon_delim> <identifier> <ass> <bool_lit> <r_paren> <colon_delim>",
 ]
 FNC_STMT = [stmt.replace(" ", "") for stmt in FNC_STMT]
 
