@@ -1,0 +1,3 @@
+from hatdog import cheese, mayo
+from hatdog import cheese
+import pandas as pd
