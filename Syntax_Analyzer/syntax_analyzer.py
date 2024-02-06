@@ -124,6 +124,9 @@ class Syntax_Analyzer():
             rule_name = "Function Statement"
         elif actual_syntax[0] == "comment":
             rule_name = "Comment Statement"
+        elif actual_syntax[0] == "if_kw":
+            rule_name = "If Statement"
+            actual_syntax = self.converter(actual_syntax)
         else:
             return None, None, actual_syntax, 0    
         
@@ -135,7 +138,7 @@ class Syntax_Analyzer():
                  # Zipping the compound elements
                 rule_syntax = self.generate_compound_prod_rules(rule_name, rule_syntax, actual_syntax)
 
-            # print(f'Actual Syntax: {actual_syntax}\n Rule syntax: {rule_syntax}')
+            print(f'Actual Syntax: {actual_syntax}\n Rule syntax: {rule_syntax}')
             zipped_tokens = zip(actual_syntax, rule_syntax)
             # Calculate accuracy as the ratio of correctly matched elements
             accuracy = sum(a == b for a, b in zipped_tokens) / max(len(actual_syntax), len(rule_syntax))
@@ -193,6 +196,50 @@ class Syntax_Analyzer():
             
             # Add closing tokens for function statement
             rule_syntax.extend(['r_paren', 'colon_delim'])
+            
+        if rule_name == 'If Statement':
+            rule_syntax = rule_syntax[:2] # <if_kw> <l_paren>
+            
+            condtl_stmt =  self.extract_parameters(actual_syntax)
+
+            condtl_list = []
+            current_cond = []
+            
+            for idx, token in enumerate(condtl_stmt):
+                if token not in ["and_kw", "or_kw", "r_paren", "l_paren"]:
+                    current_cond.append(token)
+                else:
+                    if current_cond:
+                        condtl_list.append(current_cond)
+                    condtl_list.append(token)
+                    current_cond = []
+            
+            if current_cond:
+                condtl_list.append(current_cond)
+            current_cond = []
+
+            lparen_count = 0
+            for idx, cond in enumerate(condtl_list):
+                if cond == "l_paren" and (idx == 0 or condtl_list[idx-1] in ("and_kw", "or_kw")):
+                    idx_rparen = next((idx for idx, val in reversed(list(enumerate(condtl_list))) if val == "r_paren"), None)
+                    if "r_paren" in condtl_list[idx + 1:] and (idx_rparen+1 == len(condtl_list) or condtl_list[idx+1] in ("and_kw", "or_kw")):
+                        lparen_count = 1
+                        rule_syntax.append(cond)
+                        continue
+                elif cond == "r_paren" and lparen_count == 1 and  (idx+1 == len(condtl_list) or condtl_list[idx+1] in ("and_kw", "or_kw")):
+                    lparen_count = 0
+                    rule_syntax.append(cond)
+                    continue
+                elif cond in ("and_kw", "or_kw"):
+                    rule_syntax.append(cond)
+                else:
+                    condition = ''.join(f"<{token}>" for token in cond)
+                    if condition in LOGICAL_STMT or condition in RELATIONAL_STMT:
+                        rule_syntax.extend(condition[1:-1].split('><'))
+                    else:
+                        break
+                    
+            rule_syntax.extend(['r_paren', 'colon_delim'])    
 
         return rule_syntax
 
@@ -210,21 +257,23 @@ class Syntax_Analyzer():
         actual_syntax = ' '.join(actual_syntax)
         
         # Define the pattern to match the desired syntax
-        pattern = r"l_paren (.+?) r_paren"
+        pattern = r"l_paren (.+? r_paren)"
 
         # Use regular expression to find matches
-        matches = re.search(pattern, actual_syntax)
+        matches = re.findall(pattern, actual_syntax)
 
         # Extract the parameters if matches are found
         if matches:
-            parameters = matches.group(1).split()
+            # Get the last match (most inner content between l_paren and r_paren)
+            inner_content = matches[-1]
+            parameters = inner_content.split()
             return parameters
         else:
             return None
     
     
     
-    def converter(self, syntax):
+    def converter(self, actual_syntax):
         """
         Converts the specific data types into 'dt' for bnf purposes in production rules.
         While checking first
@@ -236,7 +285,10 @@ class Syntax_Analyzer():
             matching_rule (list): ist of converted syntax.
 
         """
-        converted_syntax = ['dt' if token in DATA_TYPES else token for token in syntax]
+        converted_syntax = ['dt' if token in DATA_TYPES else token for token in actual_syntax]
+        converted_syntax = ['lit' if token.endswith("_lit") else token for token in converted_syntax]
+        converted_syntax = ['op' if token.endswith("_op") and token not in ("and_op", "or_op") else token for token in converted_syntax]
+
         return converted_syntax
 
 
