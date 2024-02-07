@@ -1,0 +1,9 @@
+int: a = 2.3
+float 2.4
+str: x = "mama mo'
+
+bool: check = True
+str: a
+str: x = "mama mo"
+str: x = 'mama mo'
+int: x = 2

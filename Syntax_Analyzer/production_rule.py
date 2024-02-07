@@ -15,16 +15,31 @@ COMPARISON_OP = [
 ########################################
 DECLARATION_STMT = [
     # Declaration for literals
-    "<dt> <colon_delim> <identifier> <ass> <int_lit>", 
-    
+    "<int_dt> <colon_delim> <identifier> <ass> <int_lit>", 
+    "<float_dt> <colon_delim> <identifier> <ass> <float_lit>",
+    "<bool_dt> <colon_delim> <identifier> <ass> <bool_lit>",
+    "<str_dt> <colon_delim> <identifier> <ass> <s_quo> <str_lit> <s_quo>",
+    "<str_dt> <colon_delim> <identifier> <ass> <d_quo> <str_lit> <d_quo>",
     # Declerations for variables or identifier
-    "<dt> <colon_delim> <identifier> <ass> <identifier>", 
+    "<int_dt> <colon_delim> <identifier> <ass> <identifier>", 
+    "<float_dt> <colon_delim> <identifier> <ass> <identifier>",
+    "<bool_dt> <colon_delim> <identifier> <ass> <identifier>",
+    "<str_dt> <colon_delim> <identifier> <ass> <identifier>",
+    "<str_dt> <colon_delim> <identifier> <ass> <identifier>",
     
     # Declarations of identifier but without values
-    "<dt> <colon_delim> <identifier>",
+    "<int_dt> <colon_delim> <identifier>", 
+    "<float_dt> <colon_delim> <identifier>",
+    "<bool_dt> <colon_delim> <identifier>",
+    "<str_dt> <colon_delim> <identifier>",
+    "<str_dt> <colon_delim> <identifier>",
 
     # Decleration of lists
-    "<dt> <colon_delim> <identifier> <l_bracket> <r_bracket>",
+    "<int_dt> <colon_delim> <identifier> <l_bracket> <r_bracket>", 
+    "<float_dt> <colon_delim> <identifier> <l_bracket> <r_bracket>",
+    "<bool_dt> <colon_delim> <identifier> <l_bracket> <r_bracket>",
+    "<str_dt> <colon_delim> <identifier> <l_bracket> <r_bracket>",
+    "<str_dt> <colon_delim> <identifier> <l_bracket> <r_bracket>",
 ]
 DECLARATION_STMT = [stmt.replace(" ", "") for stmt in DECLARATION_STMT]
 
@@ -32,19 +47,19 @@ DECLARATION_STMT = [stmt.replace(" ", "") for stmt in DECLARATION_STMT]
 # INPUT STATEMENTS
 ########################################
 IN_STMT = [
-    "<in_kw> <l_paren> <r_paren>",
-    "<in_kw> <l_paren> <s_quo> <str_lit> <s_quo> <r_paren>",
-    "<in_kw> <l_paren> <d_quo> <str_lit> <d_quo> <r_paren>",
-    "<in_kw> <l_paren> <d_quo> <char_lit> <d_quo> <r_paren>",
-    "<in_kw> <l_paren> <s_quo> <char_lit> <s_quo> <r_paren>",
-    "<in_kw> <l_paren> <str_lit> <r_paren>",
-    "<in_kw> <l_paren> <identifier> <r_paren>",
-    "<in_kw> <l_paren> <s_quo> <identifier> <s_quo> <r_paren>",
-    "<in_kw> <l_paren> <d_quo> <identifier> <d_quo> <r_paren>",
-    "<in_kw> <l_paren> <d_quo> <str_lit> <l_curly> <identifier> <r_curly> <str_lit> <d_quo> <r_paren>",
-    "<in_kw> <l_paren> <d_quo> <str_lit> <l_curly> <identifier> <r_curly> <d_quo> <r_paren>",
-    "<in_kw> <l_paren> <d_quo> <l_curly> <identifier> <r_curly> <str_lit> <l_curly> <identifier> <r_curly> <str_lit> <d_quo> <r_paren>",
-    "<in_kw> <l_paren> <d_quo> <l_curly> <identifier> <r_curly> <str_lit> <l_curly> <identifier> <r_curly> <d_quo> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <s_quo> <str_lit> <s_quo> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <d_quo> <str_lit> <d_quo> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <d_quo> <char_lit> <d_quo> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <s_quo> <char_lit> <s_quo> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <str_lit> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <identifier> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <s_quo> <identifier> <s_quo> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <d_quo> <identifier> <d_quo> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <d_quo> <str_lit> <l_curly> <identifier> <r_curly> <str_lit> <d_quo> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <d_quo> <str_lit> <l_curly> <identifier> <r_curly> <d_quo> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <d_quo> <l_curly> <identifier> <r_curly> <str_lit> <l_curly> <identifier> <r_curly> <str_lit> <d_quo> <r_paren>",
+    "<identifier> <ass> <in_kw> <l_paren> <d_quo> <l_curly> <identifier> <r_curly> <str_lit> <l_curly> <identifier> <r_curly> <d_quo> <r_paren>",
 ]
 IN_STMT = [stmt.replace(" ", "") for stmt in IN_STMT]
 
@@ -183,6 +198,8 @@ LOOP_STMT = [stmt.replace(" ", "") for stmt in LOOP_STMT]
 ########################################
 ASS_STMT = [
     '<identifier> <ass> <identifier>',
+    '<identifier> <ass> <s_quo> <lit> <s_quo>',
+    '<identifier> <ass> <d_quo> <lit> <d_quo>',
     '<identifier> <ass> <s_quo> <identifier> <s_quo>',
     '<identifier> <ass> <d_quo> <identifier> <d_quo>',
     '<identifier> <ass> <identifier> <l_bracket> <r_bracket>',
@@ -191,7 +208,6 @@ ASS_STMT = [
     '<identifier> <ass> <identifier> <l_paren> <r_paren>',
     '<identifier> <ass> <identifier> <l_paren> <identifier> <r_paren>',
     '<identifier> <ass> <func> <l_paren> <identifier> <r_paren>',
-    '<while_kw> <identifier> <comp_op> <>'
 ]
 ASS_STMT = [stmt.replace(" ", "") for stmt in ASS_STMT]
 

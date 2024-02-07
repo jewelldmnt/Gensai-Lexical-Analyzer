@@ -14,6 +14,7 @@ class Syntax_Analyzer():
         self.lex_analysis = None
         self.syntax_errors = None
         self.all_syntax_error = {}
+        self.already_checked = False
         self.in_loop = False
         self.is_if_present = False
         self.currect_line_num = ""
@@ -46,6 +47,8 @@ class Syntax_Analyzer():
         """
         # print(self.lex_analysis)
         for line_num, token_list in lex_analysis.items():
+            self.already_checked = False
+            specific_errors = None
             invalid_indent = False
             syntax_error = []
             self.currect_line_num = line_num
@@ -87,7 +90,8 @@ class Syntax_Analyzer():
                 syntax_error.append((code, f'Invalid {prod_rule_name}', self.describe_error(actual_syntax, rule_syntax)))
             
             else: # Possible General Syntax Error
-                specific_errors = self.general_error_handler(actual_syntax)
+                if self.already_checked == False:
+                    specific_errors = self.general_error_handler(actual_syntax)
                 code = self.get_code(line_num)
                 # If the syntax in that line has a specific error base on the error rules, append the specific description
                 if specific_errors:
@@ -96,7 +100,7 @@ class Syntax_Analyzer():
                         syntax_error.append((code, f'Unexpected Token', error))
                 # Else append, general description
                 else:
-                    syntax_error.append((code, f'Invalid Syntax', f'kase mama mo blue'))
+                    syntax_error.append((code, f'Invalid Syntax', f'Syntax Error'))
 
             self.all_syntax_error.update({line_num: syntax_error})
         
@@ -143,11 +147,10 @@ class Syntax_Analyzer():
         
         if actual_syntax[0].endswith("_dt"):
             rule_name = "Declaration Statement"
-            actual_syntax = self.converter(actual_syntax)
         elif actual_syntax[0] == "out_kw":
             rule_name = "Output Statement"
             actual_syntax = self.normalize(actual_syntax)
-        elif actual_syntax[0] == "in_kw":
+        elif len(actual_syntax) >= 3 and actual_syntax[2] == "in_kw":
             rule_name = "Input Statement"
             actual_syntax = self.normalize(actual_syntax)
         elif actual_syntax[0] in ("import_kw", "from_kw"):
@@ -158,6 +161,7 @@ class Syntax_Analyzer():
             rule_name = "Loop Statement"
         elif actual_syntax[0] == "func_kw":
             rule_name = "Function Statement"
+            actual_syntax = self.converter(actual_syntax)
         elif actual_syntax[0] == "identifier":
             rule_name = "Assignment Statement"
             actual_syntax = self.converter(actual_syntax)
@@ -271,7 +275,7 @@ class Syntax_Analyzer():
                 # Build a parameter string with '<>' around each token
                 parameter = ''.join(f"<{token}>" for token in param)
 
-                if parameter in DECLARATION_STMT:
+                if parameter in DECLARATION_STMT or parameter in ASS_STMT:
                     # Add the parameter tokens to rule_syntax
                     rule_syntax.extend(parameter[1:-1].split('><'))
                     if idx < len(param_list) - 1:
@@ -393,7 +397,8 @@ class Syntax_Analyzer():
             list_of_returned_errors = self.in_error(chunk, actual_syntax[i - 3:i])
             
             if list_of_returned_errors:
-                list_of_errors.extend(list_of_returned_errors)  
+                list_of_errors.extend(list_of_returned_errors)
+                break
 
         return list_of_errors if list_of_errors else None
     
@@ -411,10 +416,10 @@ class Syntax_Analyzer():
         # Initialize variables and format the lists into strings
         errors = []
         two_bit_token = ' '.join(two_tokens)
-
         # Normalize the token using regular expression
-        modified_token = re.sub(r'(\w+)_dt (\w+)', lambda match: f"dt {'error' if match.group(2) != 'colon_delim' else 'colon_delim'}", two_bit_token)
-        modified_token = re.sub(r'(\w+)_dt (\w+)|out_kw (\w+)', lambda match: f"out_kw {'error' if match.group(2) and match.group(2) != 'colon_delim' else 'colon_delim' if match.group(3) == 'colon_delim' else 'error'}", modified_token)
+        modified_token = re.sub(r'dt (\w+)', lambda match: f"dt {'error' if match.group(1) != 'colon_delim' else 'colon_delim'}", two_bit_token)
+        if modified_token != 'dt error':
+            modified_token = re.sub(r'dt (\w+)|out_kw (\w+)', lambda match: f"out_kw {'error' if match.group(2) and match.group(2) != 'colon_delim' else 'colon_delim' if match.group(1) == 'colon_delim' else 'error'}", two_bit_token)
         modified_token = re.sub(r'colon_delim (\w+)_kw|colon_delim (\w+)_met|colon_delim (\w+)_func', lambda match: f"colon_delim {'key' if match.group(2) and match.group(2) != 'colon_delim' else 'colon_delim' if match.group(3) == 'colon_delim' else 'error'}", modified_token)
 
         if three_tokens is not None and len(three_tokens) >= 2:
@@ -433,6 +438,7 @@ class Syntax_Analyzer():
             errors.append("Expected {} but encountered {}".format(expected_token, two_tokens[1]))
         
         if errors:
+            self.already_checked = True
             return errors
         else:
             return None

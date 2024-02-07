@@ -1,7 +1,8 @@
+func main(float x, str x, int: x = 2, float: y = 2.4, str = 'text'):
 func (main(int: x):
 func main():
 func main(int: x, float: y):
 func main(int: x = 2, float: y = 2.4):
-func main(int: x = 2, float: y = 2.4, string = 'text'):
-func main(float x, string x, int: x = 2, float: y = 2.4, string = 'text'):
+func main(int: x = 2, float: y = 2.4, id = 'text'):
+func main(float x, str x, int: x = 2, float: y = 2.4, str = 'text'):
 func main(int: x, float: y)

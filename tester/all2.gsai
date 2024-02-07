@@ -1,0 +1,31 @@
+# loop statements
+while (a > 2 or b == 3)
+while a:
+while (!a):
+while (f + x == x):
+while (False):
+    stop
+stop
+
+repeat x:
+repeat cal_velocity():
+repeat cal_velocity[1]:
+    stop
+repeat 2.4:
+
+for x in mama_mo[index]:
+    skip
+skip
+for x within mama_mo:
+for x within mama_mo[2]:
+for x in mama_mo():
+    skip
+skip
+
+# decleration statement
+int: a = 2.3
+float 2.4
+str: x = "mama mo'
+
+bool: check = True
+str: a
