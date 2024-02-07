@@ -15,26 +15,16 @@ COMPARISON_OP = [
 ########################################
 DECLARATION_STMT = [
     # Declaration for literals
-    "<int_dt> <colon_delim> <identifier> <ass> <int_lit>", 
-    "<float_dt> <colon_delim> <identifier> <ass> <float_lit>",
-    "<str_dt> <colon_delim> <identifier> <ass> <s_quo> <str_lit> <s_quo>",
-    "<str_dt> <colon_delim> <identifier> <ass> <d_quo> <str_lit> <d_quo>",
-    "<char_dt> <colon_delim> <identifier> <ass> <char_lit>",
-    "<bool_dt> <colon_delim> <identifier> <ass> <bool_lit>",
+    "<dt> <colon_delim> <identifier> <ass> <int_lit>", 
     
     # Declerations for variables or identifier
-    "<int_dt> <colon_delim> <identifier> <ass> <identifier>", 
-    "<float_dt> <colon_delim> <identifier> <ass> <identifier>",
-    "<str_dt> <colon_delim> <identifier> <ass> <identifier>",
-    "<char_dt> <colon_delim> <identifier> <ass> <identifier>",
-    "<bool_dt> <colon_delim> <identifier> <ass> <identifier>",
+    "<dt> <colon_delim> <identifier> <ass> <identifier>", 
     
     # Declarations of identifier but without values
-    "<int_dt> <colon_delim> <identifier>",
-    "<float_dt> <colon_delim> <identifier>",
-    "<str_dt> <colon_delim> <identifier>",
-    "<char_dt> <colon_delim> <identifier>",
-    "<bool_dt> <colon_delim> <identifier>"
+    "<dt> <colon_delim> <identifier>",
+
+    # Decleration of lists
+    "<dt> <colon_delim> <identifier> <l_bracket> <r_bracket>",
 ]
 DECLARATION_STMT = [stmt.replace(" ", "") for stmt in DECLARATION_STMT]
 
@@ -150,7 +140,7 @@ IF_STMT = [
     "<if_kw> <l_paren> <lit> <r_paren> <colon_delim>",
     "<elif_kw> <l_paren> <lit> <r_paren> <colon_delim>",
     "<else_kw> <colon_delim>"
-
+]
 IF_STMT = [stmt.replace(" ", "") for stmt in IF_STMT]
 
 ########################################
@@ -192,15 +182,15 @@ LOOP_STMT = [stmt.replace(" ", "") for stmt in LOOP_STMT]
 # ASSIGNMENT STATEMENTS
 ########################################
 ASS_STMT = [
-    '<identifier> <ass> <lit>',
     '<identifier> <ass> <identifier>',
-    '<identifier> <ass> <s_quo> <lit> <s_quo>',
-    '<identifier> <ass> <d_quo> <lit> <d_quo>',
+    '<identifier> <ass> <s_quo> <identifier> <s_quo>',
+    '<identifier> <ass> <d_quo> <identifier> <d_quo>',
     '<identifier> <ass> <identifier> <l_bracket> <r_bracket>',
     '<identifier> <ass> <identifier> <l_bracket> <lit> <r_bracket>',
     '<identifier> <ass> <identifier> <l_bracket> <identifier> <r_bracket>',
     '<identifier> <ass> <identifier> <l_paren> <r_paren>',
     '<identifier> <ass> <identifier> <l_paren> <identifier> <r_paren>',
+    '<identifier> <ass> <func> <l_paren> <identifier> <r_paren>',
     '<while_kw> <identifier> <comp_op> <>'
 ]
 ASS_STMT = [stmt.replace(" ", "") for stmt in ASS_STMT]
@@ -226,7 +216,7 @@ PRODUCTION_RULE = {
     "Function Statement": FNC_STMT,
     "Comment Statement": COMMENT_STMT,
     "If Statement": IF_STMT,
-    "While Statement": WHILE_STMT
+    "While Statement": WHILE_STMT,
     "Loop Statement":LOOP_STMT,
     "Assignment Statement": ASS_STMT
 }

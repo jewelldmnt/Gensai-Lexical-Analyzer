@@ -143,6 +143,7 @@ class Syntax_Analyzer():
         
         if actual_syntax[0].endswith("_dt"):
             rule_name = "Declaration Statement"
+            actual_syntax = self.converter(actual_syntax)
         elif actual_syntax[0] == "out_kw":
             rule_name = "Output Statement"
             actual_syntax = self.normalize(actual_syntax)
@@ -160,6 +161,8 @@ class Syntax_Analyzer():
         elif actual_syntax[0] == "identifier":
             rule_name = "Assignment Statement"
             actual_syntax = self.converter(actual_syntax)
+            actual_syntax = ['identifier' if x =='lit' else x for x in actual_syntax]
+            actual_syntax = ['func' if x.endswith('_func') else x for x in actual_syntax]
         elif actual_syntax[0] == "comment":
             rule_name = "Comment Statement"
         elif actual_syntax[0] in ["if_kw", "elif_kw", "else_kw"]:
@@ -301,6 +304,19 @@ class Syntax_Analyzer():
         elif rule_name == "While Statement":
             rule_syntax = rule_syntax[:2] # <while_kw> <l_paren>
             rule_syntax = self.check_compound_condt(rule_syntax, actual_syntax)
+
+        if rule_name == 'Assignment Statement':
+            actual_syntax = [item for item in actual_syntax if item != 'd_quo' and item != 's_quo']
+            actual_syntax = ['identifier' if item == 'lit' else item for item in actual_syntax]
+            excess_actual_syntax = len(actual_syntax) - len(rule_syntax)
+            if excess_actual_syntax > 0:
+                while excess_actual_syntax > 0:
+                    if 'r_paren' in rule_syntax:
+                        rule_syntax.remove('r_paren')
+                    rule_syntax.append('comma_delim')
+                    rule_syntax.append('identifier')
+                    excess_actual_syntax -= 2
+                rule_syntax.append('r_paren')
 
         return rule_syntax
 
