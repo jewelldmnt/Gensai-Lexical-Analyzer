@@ -32,7 +32,11 @@ def update_line_number(*args):
     """
     lines = ide_text.get("1.0", "end-1c").split("\n")
     line_numbers = " ".join(f'{i}' for i in range(1, len(lines) + 1))
+    wrap_length = 15 if len(lines) < 10 else (30 if len(lines) < 100 else 45)
+
+    
     line_number_label.config(text=line_numbers)
+    line_number_label.config(wraplength=wrap_length)
     
     
 def is_valid_filename(file_path):
@@ -330,7 +334,7 @@ scrollbar_ide.place(x=733.0, y=170.0, height=683.0)  # Adjusted x-coordinate for
 ide_text.config(yscrollcommand=scrollbar_ide.set)
 
 # Creating a Text widget for displaying current line number in IDE
-line_number_label = Label(canvas, bd=0, bg="#1D2125", fg="#DCDCDC", font=("Courier", 10), text="", wraplength=30, anchor=N)
+line_number_label = Label(canvas, bd=0, bg="#1D2125", fg="#DCDCDC", font=("Courier", 10), text="", wraplength=15, anchor=N)
 line_number_label.place(x=135.0, y=170.0, width=50.0, height=683)
 # Binding the update_line_number function to cursor movement
 ide_text.bind("<KeyRelease>", update_line_number)

@@ -1,0 +1,18 @@
+# Test case 1: No error
+repeat x:
+    out: "This is working"
+    stop
+
+for x within arr:
+    out: "This is the element: {x}"
+
+while (a > 2 or b == 3):
+    out: "This is working"
+
+
+# Test case 1: No error
+for x within x;
+out: "This is not working"
+skip
+
+while (a > 2 or b == 3)

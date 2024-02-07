@@ -155,7 +155,7 @@ class Syntax_Analyzer():
             actual_syntax = self.normalize(actual_syntax)
         elif actual_syntax[0] in ("import_kw", "from_kw"):
             rule_name = "Import Statement"
-        elif actual_syntax[0] in ("while_kw","for_kw","repeat_kw"):
+        elif actual_syntax[0] in ("for_kw","repeat_kw"):
             self.in_loop = True
             actual_syntax = self.normalize(actual_syntax)
             rule_name = "Loop Statement"

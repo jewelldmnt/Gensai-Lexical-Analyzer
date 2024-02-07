@@ -20,6 +20,8 @@ DECLARATION_STMT = [
     "<bool_dt> <colon_delim> <identifier> <ass> <bool_lit>",
     "<str_dt> <colon_delim> <identifier> <ass> <s_quo> <str_lit> <s_quo>",
     "<str_dt> <colon_delim> <identifier> <ass> <d_quo> <str_lit> <d_quo>",
+    "<str_dt> <colon_delim> <identifier> <ass> <s_quo> <identifier> <s_quo>",
+    "<str_dt> <colon_delim> <identifier> <ass> <d_quo> <identifier> <d_quo>",
     # Declerations for variables or identifier
     "<int_dt> <colon_delim> <identifier> <ass> <identifier>", 
     "<float_dt> <colon_delim> <identifier> <ass> <identifier>",
